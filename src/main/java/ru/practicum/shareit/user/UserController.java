@@ -14,6 +14,6 @@ public class UserController {
     private final UserService service;
 
     public User addUser(User user) {
-        return null;
+        return service.addUser(user);
     }
 }
