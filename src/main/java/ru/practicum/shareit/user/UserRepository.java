@@ -6,7 +6,7 @@ import java.util.Optional;
 public interface UserRepository {
     Optional<User> addUser(User user);
 
-    Optional<User> updateUser(User user);
+    Optional<User> updateUser(User user, long userId);
 
     Optional<User> getUserById(long userId);
 

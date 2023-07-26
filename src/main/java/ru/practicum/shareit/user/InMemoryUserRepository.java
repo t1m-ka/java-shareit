@@ -20,8 +20,13 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> updateUser(User user) {
-        return Optional.empty();
+    public Optional<User> updateUser(User user, long userId) {
+        User updatedUser = users.get(userId);
+        if (user.getName() != null && !user.getName().isBlank())
+            updatedUser.setName(user.getName());
+        if (user.getEmail() != null && !user.getEmail().isBlank())
+            updatedUser.setEmail(user.getEmail());
+        return Optional.of(updatedUser);
     }
 
     @Override
@@ -36,6 +41,10 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public boolean deleteUserById(long userId) {
+        if (users.containsKey(userId)) {
+            users.remove(userId);
+            return true;
+        }
         return false;
     }
 }
