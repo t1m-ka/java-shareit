@@ -5,13 +5,13 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemService {
-    Item addItem(Item item, long userId);
+    Item addItem(Item item, Long userId);
 
-    Item updateItem(Item item, long itemId, long userId);
+    Item updateItem(Item item, long itemId, Long userId);
 
-    Item getItemById(long itemId, long userId);
+    Item getItemById(long itemId, Long userId);
 
-    List<Item> getOwnerItems(long userId);
+    List<Item> getOwnerItems(Long userId);
 
     List<Item> searchItemsByName(String text);
 }
