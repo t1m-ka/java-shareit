@@ -5,12 +5,15 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ArgumentNotFoundException;
 import ru.practicum.shareit.exception.ItemOwnershipException;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,38 +22,42 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public Item addItem(Item item, Long userId) {
+    public ItemDto addItem(Item item, Long userId) {
         checkUserExist(userId);
         item.setOwner(userId);
-        return itemRepository.addItem(item).get();
+        return ItemMapper.toItemDto(itemRepository.addItem(item).get());
     }
 
     @Override
-    public Item updateItem(Item item, long itemId, Long userId) {
+    public ItemDto updateItem(Item item, long itemId, Long userId) {
         checkUserExist(userId);
         Item updatedItem = itemRepository.getItemById(itemId).get();
         if (updatedItem == null)
             throw new UserNotFoundException("Пользователь с id=" + userId + "не найден");
         if (updatedItem.getOwner() == userId)
-            return itemRepository.updateItem(item, itemId).get();
+            return ItemMapper.toItemDto(itemRepository.updateItem(item, itemId).get());
         else
             throw new ItemOwnershipException("Изменять информацию может только владелец");
     }
 
     @Override
-    public Item getItemById(long itemId, Long userId) {
-        return itemRepository.getItemById(itemId).get();
+    public ItemDto getItemById(long itemId, Long userId) {
+        return ItemMapper.toItemDto(itemRepository.getItemById(itemId).get());
     }
 
     @Override
-    public List<Item> getOwnerItems(Long userId) {
-        return itemRepository.getOwnerItems(userId);
+    public List<ItemDto> getOwnerItems(Long userId) {
+        return itemRepository.getOwnerItems(userId).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Item> searchItemsByName(String text) {
+    public List<ItemDto> searchItemsByName(String text) {
         if (!text.isEmpty())
-            return itemRepository.searchItemsByName(text);
+            return itemRepository.searchItemsByName(text).stream()
+                    .map(ItemMapper::toItemDto)
+                    .collect(Collectors.toList());
         return new ArrayList<>();
     }
 
