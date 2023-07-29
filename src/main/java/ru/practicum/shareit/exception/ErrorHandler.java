@@ -36,4 +36,10 @@ public class ErrorHandler {
     public ErrorResponse handleArgumentNotFoundException(final ArgumentNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUserCreateException(final UserCreateException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

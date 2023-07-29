@@ -3,6 +3,8 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.UserAlreadyExistsException;
+import ru.practicum.shareit.exception.UserCreateException;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -19,28 +21,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto addUser(User user) {
-        if (checkEmailExist(user).isPresent())
+        checkEmailExist(user).ifPresent(x -> {
             throw new UserAlreadyExistsException("Пользователь с таким адресом уже зарегистрирован");
+        });
         Optional<User> newUser = repository.addUser(user);
         if (newUser.isPresent())
             return UserMapper.toUserDto(newUser.get());
         else
-            throw new NullPointerException();
+            throw new UserCreateException("Пользователь не был создан");
     }
 
     @Override
     public UserDto updateUser(User user, long userId) {
-        Optional<User> checkedUser = checkEmailExist(user);
-        if (checkedUser.isPresent()) {
-            if (checkedUser.get().getId() != userId) {
+        checkEmailExist(user).ifPresent(x -> {
+            if (x.getId() != userId) {
                 throw new UserAlreadyExistsException("Пользователь с таким адресом уже зарегистрирован");
             }
-        }
+        });
         Optional<User> newUser = repository.updateUser(user, userId);
         if (newUser.isPresent())
             return UserMapper.toUserDto(newUser.get());
         else
-            throw new NullPointerException();
+            throw new UserCreateException("Пользователь не был создан");
     }
 
     @Override
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent())
             return UserMapper.toUserDto(user.get());
         else
-            throw new NullPointerException();
+            throw new UserNotFoundException("Пользователь с id=" + userId + " не найден");
     }
 
     @Override
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(long userId) {
         if (!repository.deleteUserById(userId))
-            throw new NullPointerException();
+            throw new UserNotFoundException("Пользователь с id=" + userId + " не найден");
     }
 
     public Optional<User> checkEmailExist(User user) {
