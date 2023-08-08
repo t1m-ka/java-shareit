@@ -3,17 +3,22 @@ package ru.practicum.shareit.user.model;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
-@Component
+@Entity
+@Table(name = "users")
 @Data
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotEmpty(message = "Имя не может быть пустым")
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     @NotEmpty(message = "Email не может быть пустым")
     @Email(message = "Email не корректен")
     private String email;
