@@ -1,12 +1,9 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "items")
