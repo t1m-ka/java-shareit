@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithoutBooking;
 import ru.practicum.shareit.user.dto.UserDto;
 
 @Data
@@ -21,6 +22,8 @@ public class BookingDto {
 
     private UserDto booker;
 
+    private long bookerId;
+
     private ItemDto item;
 
     public BookingDto(long id, long itemId, String start, String end, BookingStatus status, UserDto booker, ItemDto item) {
@@ -31,5 +34,6 @@ public class BookingDto {
         this.status = status;
         this.booker = booker;
         this.item = item;
+        this.bookerId = booker.getId();
     }
 }

@@ -30,7 +30,6 @@ public class BookingController {
     public BookingDto approveBooking(@PathVariable Long bookingId,
             @RequestParam boolean approved,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
-
         return service.approveBooking(bookingId, approved, ownerId);
     }
 

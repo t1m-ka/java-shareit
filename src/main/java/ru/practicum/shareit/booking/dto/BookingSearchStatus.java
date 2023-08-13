@@ -9,7 +9,8 @@ public enum BookingSearchStatus {
     FUTURE,
     PAST,
     WAITING,
-    APPROVED;
+    APPROVED,
+    REJECTED;
 
     public static BookingStatus toBookingStatus(BookingSearchStatus bookingSearchStatus) {
         switch (bookingSearchStatus) {

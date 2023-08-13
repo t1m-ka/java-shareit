@@ -2,6 +2,10 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.OwnershipAccessException;
 import ru.practicum.shareit.exception.UserCreateException;
@@ -13,8 +17,10 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +28,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public ItemDto addItem(ItemDto itemDto, Long userId) {
@@ -29,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
             throw new UserCreateException("Отсутствует параметр запроса");
         Item item = ItemMapper.toItem(itemDto, userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден")));
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        return ItemMapper.toItemDto(itemRepository.save(item), null, null);
     }
 
     @Override
@@ -51,19 +58,26 @@ public class ItemServiceImpl implements ItemService {
             currentItem.setAvailable(newItem.getAvailable());
         if (newItem.getOwner() != null)
             currentItem.setOwner(newItem.getOwner());
-        return ItemMapper.toItemDto(itemRepository.save(currentItem));
+        return ItemMapper.toItemDto(itemRepository.save(currentItem),
+                findItemLastBooking(itemId),
+                findItemNextBooking(itemId));
     }
 
     @Override
     public ItemDto getItemById(long itemId, Long userId) {
         return ItemMapper.toItemDto(itemRepository.findById(itemId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден")));
+                        () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден")),
+                findItemLastBooking(itemId),
+                findItemNextBooking(itemId));
     }
 
     @Override
     public List<ItemDto> getOwnerItems(Long userId) {
         return itemRepository.findOwnerItems(userId).stream()
-                .map(ItemMapper::toItemDto)
+                .map((Item item) -> ItemMapper.toItemDto(
+                        item,
+                        findItemLastBooking(item.getId()),
+                        findItemNextBooking(item.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -71,8 +85,23 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> searchItemsByName(String text) {
         if (!text.isEmpty())
             return itemRepository.findAllByNameAndDescription(text).stream()
-                    .map(ItemMapper::toItemDto)
+                    .map((Item item) -> ItemMapper.toItemDto(
+                            item,
+                            findItemLastBooking(item.getId()),
+                            findItemNextBooking(item.getId())))
                     .collect(Collectors.toList());
         return new ArrayList<>();
+    }
+
+    private BookingDto findItemLastBooking(long itemId) {
+        Optional<Booking> lastBooking = bookingRepository
+                .findFirstByItemIdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now());
+        return lastBooking.map(BookingMapper::toBookingDto).orElse(null);
+    }
+
+    private BookingDto findItemNextBooking(long itemId) {
+        Optional<Booking> nextBooking = bookingRepository
+                .findFirstByItemIdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
+        return nextBooking.map(BookingMapper::toBookingDto).orElse(null);
     }
 }

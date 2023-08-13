@@ -3,12 +3,11 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.dto.BookingDto;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDto {
+public class ItemWithoutBooking {
     long id;
 
     String name;
@@ -16,8 +15,4 @@ public class ItemDto {
     String description;
 
     Boolean available;
-
-    BookingDto lastBooking;
-
-    BookingDto nextBooking;
 }

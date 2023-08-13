@@ -37,7 +37,8 @@ public class BookingServiceImpl implements BookingService {
         Booking newBooking = BookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
         if (!item.getAvailable())
             throw new BookingUnavailableException("Бронирование запрещено владельцем");
-        if (!bookingRepository.findItemBookingBetweenDate(item.getId(), newBooking.getStart(), newBooking.getEnd()).isEmpty())
+        if (!bookingRepository.findItemBookingBetweenDate(item.getId(), newBooking.getStart(), newBooking.getEnd())
+                .isEmpty())
             throw new BookingUnavailableException("На указанное время бронирование невозможно");
 
         return BookingMapper.toBookingDto(bookingRepository.save(newBooking));

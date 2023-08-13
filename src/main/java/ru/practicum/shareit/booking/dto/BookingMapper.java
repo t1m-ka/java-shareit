@@ -21,7 +21,7 @@ public class BookingMapper {
                 formatter.format(booking.getEnd()),
                 booking.getStatus(),
                 UserMapper.toUserDto(booking.getBooker()),
-                ItemMapper.toItemDto(booking.getItem())
+                ItemMapper.toItemDto(booking.getItem(), null, null)
         );
     }
 

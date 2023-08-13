@@ -8,8 +8,9 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-public interface BookingRepository extends JpaRepository<Booking,Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select booking "
             + "from Booking as booking "
             + "join booking.booker as booker "
@@ -18,11 +19,6 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
             + "order by booking.start desc")
     List<Booking> findAllBookingUserByState(BookingStatus bookingStatus, long userId);
 
-/*    @Query("select booking "
-            + "from Booking as booking "
-            + "join booking.booker as booker "
-            + "where booker.id = ?1 "
-            + "order by booking.start desc")*/
     List<Booking> findAllByBookerId(long userId, Sort sort);
 
     List<Booking> findByBookerIdAndStartIsAfter(long userId, LocalDateTime now, Sort sort);
@@ -69,4 +65,8 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
             + "and (booking.start between ?2 and ?3) "
             + "or (booking.end between ?2 and ?3)")
     List<Booking> findItemBookingBetweenDate(long itemId, LocalDateTime startDate, LocalDateTime endDate);
+
+    Optional<Booking> findFirstByItemIdAndEndBeforeOrderByEndDesc(long itemId, LocalDateTime now);
+
+    Optional<Booking> findFirstByItemIdAndStartAfterOrderByStartAsc(long itemId, LocalDateTime now);
 }
