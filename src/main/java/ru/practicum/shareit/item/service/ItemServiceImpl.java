@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.ItemOwnershipException;
+import ru.practicum.shareit.exception.OwnershipAccessException;
 import ru.practicum.shareit.exception.UserCreateException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
         Item currentItem = itemRepository.findById(itemId).orElseThrow(
                 () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
         if (userId != currentItem.getOwner().getId()) {
-            throw new ItemOwnershipException("Изменять информацию может только владелец");
+            throw new OwnershipAccessException("Изменять информацию может только владелец");
         }
 
         Item newItem = ItemMapper.toItem(itemDto, owner, currentItem.getId());
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItemsByName(String text) {
         if (!text.isEmpty())
-            return itemRepository.searchAllByNameAndDescription(text).stream()
+            return itemRepository.findAllByNameAndDescription(text).stream()
                     .map(ItemMapper::toItemDto)
                     .collect(Collectors.toList());
         return new ArrayList<>();
