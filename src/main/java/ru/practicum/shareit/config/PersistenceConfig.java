@@ -24,12 +24,14 @@ public class PersistenceConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", environment.getProperty("hibernate.show_sql", "false"));
-        properties.put("javax.persistence.schema-generation.database.action",
-                environment.getProperty("javax.persistence.schema-generation.database.action", "none"));
-        properties.put("javax.persistence.schema-generation.create-script-source",
-                environment.getProperty("javax.persistence.schema-generation.create-script-source"));
+        properties.put("spring.jpa.properties.hibernate.dialect", environment.getRequiredProperty("spring.jpa.properties.hibernate.dialect"));
+        properties.put("spring.jpa.show-sql", environment.getProperty("spring.jpa.show-sql", "false"));
+        properties.put("spring.jpa.hibernate.ddl-auto",
+                environment.getProperty("spring.jpa.hibernate.ddl-auto", "none"));
+        properties.put("spring.jpa.properties.hibernate.format_sql",
+                environment.getProperty("spring.jpa.properties.hibernate.format_sql"));
+        properties.put("spring.sql.init.mode",
+                environment.getProperty("spring.sql.init.mode"));
         return properties;
     }
 
