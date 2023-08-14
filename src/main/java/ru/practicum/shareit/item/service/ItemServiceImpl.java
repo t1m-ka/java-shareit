@@ -35,17 +35,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(ItemDto itemDto, Long userId) {
-        Item item = ItemMapper.toItem(itemDto, userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден")));
+        User user = findUser(userId);
+        Item item = ItemMapper.toItem(itemDto, user);
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto updateItem(ItemDto itemDto, long itemId, Long ownerId) {
-        User owner = userRepository.findById(ownerId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + ownerId + " не найден"));
-        Item currentItem = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
+        User owner = findUser(ownerId);
+        Item currentItem = findItem(itemId);
         if (ownerId != currentItem.getOwner().getId())
             throw new OwnershipAccessException("Изменять информацию может только владелец");
 
@@ -58,16 +56,13 @@ public class ItemServiceImpl implements ItemService {
             currentItem.setAvailable(newItem.getAvailable());
         if (newItem.getOwner() != null)
             currentItem.setOwner(newItem.getOwner());
-
         return ItemMapper.toItemDto(itemRepository.save(currentItem));
     }
 
     @Override
     public ItemDtoWithBookingAndComments getItemById(long itemId, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
+        User user = findUser(userId);
+        Item item = findItem(itemId);
         BookingDto lastBooking = null;
         BookingDto nextBooking = null;
         if (item.getOwner().getId() == user.getId()) {
@@ -101,6 +96,16 @@ public class ItemServiceImpl implements ItemService {
         return new ArrayList<>();
     }
 
+    private User findUser(long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+    }
+
+    private Item findItem(long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(
+                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
+    }
+
     private BookingDto findItemLastBooking(long itemId) {
         List<Booking> pastBookingList = bookingRepository
                 .findByItemIdAndStartBeforeOrderByEndDesc(itemId, LocalDateTime.now());
@@ -121,10 +126,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto addCommentItem(long itemId, Long authorId, CommentDto commentDto) {
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
-        User author = userRepository.findById(authorId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + authorId + " не найден"));
+        User author = findUser(authorId);
+        Item item = findItem(itemId);
         if (!isUserBookItem(item))
             throw new BookingUnavailableException("Вы не можете оставить отзыв");
         Comment newComment = new Comment(

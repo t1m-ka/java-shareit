@@ -27,11 +27,9 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingDto bookItem(BookingDto bookingDto, Long userId) {
-        User booker = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(
-                () -> new ItemNotFoundException("Вещь с id=" + bookingDto.getItemId() + " не найдена"));
+    public BookingDto bookItem(BookingDto bookingDto, Long bookerId) {
+        User booker = findUser(bookerId);
+        Item item = findItem(bookingDto.getItemId());
         if (booker.getId() == item.getId())
             throw new OwnershipAccessException("Владелец не может бронировать свои вещи");
         Booking newBooking = BookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
@@ -44,8 +42,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto approveBooking(Long bookingId, boolean approved, Long ownerId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new BookingNotFoundException("Бронирование с id=" + bookingId + " не найдено"));
-        userRepository.findById(ownerId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + ownerId + " не найден"));
+        findUser(ownerId);
         if (booking.getItem().getOwner().getId() != ownerId)
             throw new OwnershipAccessException("Смена статуса разрешена только владельцу");
 
@@ -63,8 +60,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto getBookingInfoByBookingId(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new BookingNotFoundException("Бронирование с id=" + bookingId + " не найдено"));
-        userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+        findUser(userId);
         long ownerId = booking.getItem().getOwner().getId();
         long bookerId = booking.getBooker().getId();
         if (userId != bookerId && userId != ownerId)
@@ -74,8 +70,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getBookingUserListByState(String state, Long userId) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+        findUser(userId);
         BookingSearchStatus bookingSearchStatus;
         try {
             bookingSearchStatus = BookingSearchStatus.valueOf(state);
@@ -123,8 +118,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getBookingItemsByOwner(String state, Long ownerId) {
-        userRepository.findById(ownerId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + ownerId + " не найден"));
+        findUser(ownerId);
         BookingSearchStatus bookingSearchStatus;
         try {
             bookingSearchStatus = BookingSearchStatus.valueOf(state);
@@ -172,5 +166,15 @@ public class BookingServiceImpl implements BookingService {
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
+    }
+
+    private User findUser(long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+    }
+
+    private Item findItem(long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(
+                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
     }
 }
