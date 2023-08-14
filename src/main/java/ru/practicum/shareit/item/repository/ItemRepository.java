@@ -10,7 +10,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select it "
             + "from Item as it "
             + "join it.owner as ow "
-            + "where ow.id = ?1 ")
+            + "where ow.id = ?1 "
+            + "order by it.id asc")
     List<Item> findOwnerItems(long userId);
 
     @Query("select it "

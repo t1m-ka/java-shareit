@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemWithoutBooking {
+public class CommentDto {
     long id;
 
-    String name;
+    String text;
 
-    String description;
+    String authorName;
 
-    Boolean available;
+    String created;
 }

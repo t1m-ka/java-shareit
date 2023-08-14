@@ -37,10 +37,6 @@ public class BookingServiceImpl implements BookingService {
         Booking newBooking = BookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
         if (!item.getAvailable())
             throw new BookingUnavailableException("Бронирование запрещено владельцем");
-        if (!bookingRepository.findItemBookingBetweenDate(item.getId(), newBooking.getStart(), newBooking.getEnd())
-                .isEmpty())
-            throw new BookingUnavailableException("На указанное время бронирование невозможно");
-
         return BookingMapper.toBookingDto(bookingRepository.save(newBooking));
     }
 
@@ -86,6 +82,7 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new BookingStatusException("Unknown state: " + state);
         }
+        LocalDateTime now = LocalDateTime.now();
         switch (bookingSearchStatus.name()) {
             case "ALL":
                 return bookingRepository.findAllByBookerId(
@@ -97,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
             case "FUTURE":
                 return bookingRepository.findByBookerIdAndStartIsAfter(
                                 userId,
-                                LocalDateTime.now(),
+                                now,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
                         .map(BookingMapper::toBookingDto)
@@ -105,18 +102,20 @@ public class BookingServiceImpl implements BookingService {
             case "PAST":
                 return bookingRepository.findByBookerIdAndEndIsBefore(
                                 userId,
-                                LocalDateTime.now(),
+                                now,
                                 Sort.by(Sort.Direction.DESC, "end"))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case "CURRENT":
-                return bookingRepository.findAllCurrentBookingUser(LocalDateTime.now(), userId).stream()
+                return bookingRepository.findAllCurrentBookingUser(now, userId)
+                        .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findAllBookingUserByState(
-                                BookingSearchStatus.toBookingStatus(bookingSearchStatus), userId).stream()
+                BookingStatus status = BookingSearchStatus.toBookingStatus(bookingSearchStatus);
+                return bookingRepository.findAllBookingUserByState(status, userId)
+                        .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
         }
@@ -132,6 +131,7 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new BookingStatusException("Unknown state: " + state);
         }
+        LocalDateTime now = LocalDateTime.now();
         switch (bookingSearchStatus.name()) {
             case "ALL":
                 return bookingRepository.findByItemOwnerId(
@@ -143,7 +143,7 @@ public class BookingServiceImpl implements BookingService {
             case "FUTURE":
                 return bookingRepository.findByItemOwnerIdAndStartIsAfter(
                                 ownerId,
-                                LocalDateTime.now(),
+                                now,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
                         .map(BookingMapper::toBookingDto)
@@ -151,21 +151,22 @@ public class BookingServiceImpl implements BookingService {
             case "PAST":
                 return bookingRepository.findByItemOwnerIdAndEndIsBefore(
                                 ownerId,
-                                LocalDateTime.now(),
+                                now,
                                 Sort.by(Sort.Direction.DESC, "end"))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case "CURRENT":
                 return bookingRepository.findAllCurrentBookingItemsByOwner(
-                                LocalDateTime.now(),
+                                now,
                                 ownerId)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
+                BookingStatus status = BookingSearchStatus.toBookingStatus(bookingSearchStatus);
                 return bookingRepository.findAllBookingItemsByOwner(
-                                BookingSearchStatus.toBookingStatus(bookingSearchStatus),
+                                status,
                                 ownerId)
                         .stream()
                         .map(BookingMapper::toBookingDto)

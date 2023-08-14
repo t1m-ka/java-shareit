@@ -18,6 +18,8 @@ public enum BookingSearchStatus {
                 return BookingStatus.WAITING;
             case APPROVED:
                 return BookingStatus.APPROVED;
+            case REJECTED:
+                return BookingStatus.REJECTED;
             default:
                 throw new BookingStatusException("Статус бронирования не может быть: " + bookingSearchStatus);
         }

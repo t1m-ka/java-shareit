@@ -8,7 +8,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select booking "
@@ -31,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             + "where booking.start <= ?1 "
             + "and booking.end >= ?1 "
             + "and booker.id = ?2 "
-            + "order by booking.start desc")
+            + "order by booking.start asc")
     List<Booking> findAllCurrentBookingUser(LocalDateTime now, long userId);
 
     @Query("select booking "
@@ -55,7 +54,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             + "where booking.start <= ?1 "
             + "and booking.end >= ?1 "
             + "and ow.id = ?2 "
-            + "order by booking.start desc")
+            + "order by booking.start asc")
     List<Booking> findAllCurrentBookingItemsByOwner(LocalDateTime now, long userId);
 
     @Query("select booking "
@@ -66,7 +65,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             + "or (booking.end between ?2 and ?3)")
     List<Booking> findItemBookingBetweenDate(long itemId, LocalDateTime startDate, LocalDateTime endDate);
 
-    Optional<Booking> findFirstByItemIdAndEndBeforeOrderByEndDesc(long itemId, LocalDateTime now);
+    List<Booking> findByItemIdAndStartBeforeOrderByEndDesc(long itemId, LocalDateTime now);
 
-    Optional<Booking> findFirstByItemIdAndStartAfterOrderByStartAsc(long itemId, LocalDateTime now);
+    List<Booking> findByItemIdAndStartAfterOrderByStartAsc(long itemId, LocalDateTime now);
 }

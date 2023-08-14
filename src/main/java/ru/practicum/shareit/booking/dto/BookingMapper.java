@@ -11,23 +11,23 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BookingMapper {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
                 booking.getId(),
                 booking.getItem().getId(),
-                formatter.format(booking.getStart()),
-                formatter.format(booking.getEnd()),
+                DATE_TIME_FORMATTER.format(booking.getStart()),
+                DATE_TIME_FORMATTER.format(booking.getEnd()),
                 booking.getStatus(),
                 UserMapper.toUserDto(booking.getBooker()),
-                ItemMapper.toItemDto(booking.getItem(), null, null)
+                ItemMapper.toItemDto(booking.getItem())
         );
     }
 
     public static Booking toBooking(BookingDto bookingDto, User booker, Item item, BookingStatus bookingStatus) {
-        LocalDateTime start = LocalDateTime.parse(bookingDto.getStart(), formatter);
-        LocalDateTime end = LocalDateTime.parse(bookingDto.getEnd(), formatter);
+        LocalDateTime start = LocalDateTime.parse(bookingDto.getStart(), DATE_TIME_FORMATTER);
+        LocalDateTime end = LocalDateTime.parse(bookingDto.getEnd(), DATE_TIME_FORMATTER);
         return new Booking(
                 start,
                 end,
