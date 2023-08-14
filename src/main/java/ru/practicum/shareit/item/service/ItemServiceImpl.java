@@ -131,7 +131,7 @@ public class ItemServiceImpl implements ItemService {
                 commentDto.getText(),
                 item,
                 author,
-                LocalDateTime.now().withNano(0)
+                LocalDateTime.now()
         );
         return CommentMapper.toCommentDto(commentRepository.save(newComment));
     }
