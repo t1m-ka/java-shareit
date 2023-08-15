@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.ArgumentNotFoundException;
 
 import java.util.List;
 
@@ -20,9 +19,9 @@ public class BookingController {
     public BookingDto bookItem(@RequestBody BookingDto bookingDto,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (!validateBookingDto(bookingDto))
-            throw new ArgumentNotFoundException("Ошибка входных данных");
+            throw new IllegalArgumentException("Ошибка входных данных");
         if (userId == null)
-            throw new ArgumentNotFoundException("Отсутсвтует обязательный заголовок запроса");
+            throw new IllegalArgumentException("Отсутсвтует обязательный заголовок запроса");
         return service.bookItem(bookingDto, userId);
     }
 

@@ -28,13 +28,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto bookItem(BookingDto bookingDto, Long bookerId) {
-        User booker = findUser(bookerId);
         Item item = findItem(bookingDto.getItemId());
-        if (booker.getId() == item.getId())
-            throw new OwnershipAccessException("Владелец не может бронировать свои вещи");
-        Booking newBooking = BookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
         if (!item.getAvailable())
             throw new BookingUnavailableException("Бронирование запрещено владельцем");
+        User booker = findUser(bookerId);
+        if (booker.getId() == item.getOwner().getId())
+            throw new OwnershipAccessException("Владелец не может бронировать свои вещи");
+        Booking newBooking = BookingMapper.toBooking(bookingDto, booker, item, BookingStatus.WAITING);
         return BookingMapper.toBookingDto(bookingRepository.save(newBooking));
     }
 

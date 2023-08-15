@@ -54,8 +54,6 @@ public class ItemServiceImpl implements ItemService {
             currentItem.setDescription(newItem.getDescription());
         if (newItem.getAvailable() != null)
             currentItem.setAvailable(newItem.getAvailable());
-        if (newItem.getOwner() != null)
-            currentItem.setOwner(newItem.getOwner());
         return ItemMapper.toItemDto(itemRepository.save(currentItem));
     }
 
@@ -89,11 +87,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItemsByName(String text) {
-        if (!text.isEmpty())
-            return itemRepository.findAllByNameAndDescription(text).stream()
-                    .map(ItemMapper::toItemDto)
-                    .collect(Collectors.toList());
-        return new ArrayList<>();
+        if (text.isEmpty())
+            return new ArrayList<>();
+        return itemRepository.findAllByNameAndDescription(text).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     private User findUser(long userId) {

@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.ArgumentNotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
@@ -25,9 +24,9 @@ public class ItemController {
             @RequestBody @Valid ItemDto itemDto,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId == null)
-            throw new ArgumentNotFoundException("Отсутствует параметр запроса");
+            throw new IllegalArgumentException("Отсутствует параметр запроса");
         if (!validateNewItemDto(itemDto))
-            throw new ArgumentNotFoundException("Отсутствуют обязательные поля");
+            throw new IllegalArgumentException("Отсутствуют обязательные поля");
         return service.addItem(itemDto, userId);
     }
 
@@ -37,9 +36,9 @@ public class ItemController {
             @PathVariable long itemId,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
         if (ownerId == null)
-            throw new ArgumentNotFoundException("Отсутствует параметр запроса");
+            throw new IllegalArgumentException("Отсутствует параметр запроса");
         if (!validateUpdatedItemDto(itemDto))
-            throw new ArgumentNotFoundException("Отсутствуют обязательные поля");
+            throw new IllegalArgumentException("Отсутствуют обязательные поля");
         return service.updateItem(itemDto, itemId, ownerId);
     }
 
@@ -47,7 +46,7 @@ public class ItemController {
     public ItemDtoWithBookingAndComments getItemById(@PathVariable long itemId,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId == null)
-            throw new ArgumentNotFoundException("Отсутствует параметр запроса");
+            throw new IllegalArgumentException("Отсутствует параметр запроса");
         return service.getItemById(itemId, userId);
     }
 
@@ -55,7 +54,7 @@ public class ItemController {
     public List<ItemDtoWithBookingAndComments> getOwnerItems(
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
         if (ownerId == null)
-            throw new ArgumentNotFoundException("Отсутствует параметр запроса");
+            throw new IllegalArgumentException("Отсутствует параметр запроса");
         return service.getOwnerItems(ownerId);
     }
 
@@ -63,7 +62,7 @@ public class ItemController {
     public List<ItemDto> searchItemsByName(@RequestParam("text") String text,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId == null)
-            throw new ArgumentNotFoundException("Отсутствует параметр запроса");
+            throw new IllegalArgumentException("Отсутствует параметр запроса");
         return service.searchItemsByName(text);
     }
 
@@ -72,9 +71,9 @@ public class ItemController {
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long authorId,
             @RequestBody CommentDto commentDto) {
         if (authorId == null)
-            throw new ArgumentNotFoundException("Отсутствует параметр запроса");
+            throw new IllegalArgumentException("Отсутствует параметр запроса");
         if (commentDto.getText() == null || commentDto.getText().isBlank())
-            throw new ArgumentNotFoundException("Отсутствуют обязательные поля");
+            throw new IllegalArgumentException("Отсутствуют обязательные поля");
         return service.addCommentItem(itemId, authorId, commentDto);
     }
 }
