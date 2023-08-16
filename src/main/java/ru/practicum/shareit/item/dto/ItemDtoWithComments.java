@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDto {
+public class ItemDtoWithComments {
     long id;
 
     String name;
@@ -15,4 +17,6 @@ public class ItemDto {
     String description;
 
     Boolean available;
+
+    List<CommentDto> comments;
 }

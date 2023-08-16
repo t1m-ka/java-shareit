@@ -1,24 +1,39 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
-@Component
+@Entity
+@Table(name = "items")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotEmpty(message = "Наименование не может быть пустым")
+    @Column(nullable = false)
     private String name;
 
-    @NotEmpty(message = "Описание не может быть пустым")
+    @Column(nullable = false)
     private String description;
 
-    @NotNull(message = "Статус не может быть пустым")
+    @Column(name = "is_available", nullable = false)
     private Boolean available;
 
-    private long owner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
+
+    public Item(String name, String description, Boolean available, User owner) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+    }
 }
