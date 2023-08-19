@@ -30,10 +30,14 @@ public class Item {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    public Item(String name, String description, Boolean available, User owner) {
+    @Column(name = "request_id")
+    private Long itemRequestId;
+
+    public Item(String name, String description, Boolean available, User owner, Long itemRequestId) {
         this.name = name;
         this.description = description;
         this.available = available;
         this.owner = owner;
+        this.itemRequestId = itemRequestId;
     }
 }

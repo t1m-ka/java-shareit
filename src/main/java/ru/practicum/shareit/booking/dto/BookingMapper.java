@@ -8,11 +8,10 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
+import static ru.practicum.shareit.util.Util.DATE_TIME_FORMATTER;
 
 public class BookingMapper {
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
                 booking.getId(),

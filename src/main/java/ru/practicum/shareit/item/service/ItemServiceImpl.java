@@ -7,10 +7,10 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.BookingUnavailableException;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.OwnershipAccessException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.BookingUnavailableException;
+import ru.practicum.shareit.util.exception.ItemNotFoundException;
+import ru.practicum.shareit.util.exception.OwnershipAccessException;
+import ru.practicum.shareit.util.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -54,6 +54,8 @@ public class ItemServiceImpl implements ItemService {
             currentItem.setDescription(newItem.getDescription());
         if (newItem.getAvailable() != null)
             currentItem.setAvailable(newItem.getAvailable());
+        if (newItem.getItemRequestId() != null)
+            currentItem.setItemRequestId(newItem.getItemRequestId());
         return ItemMapper.toItemDto(itemRepository.save(currentItem));
     }
 

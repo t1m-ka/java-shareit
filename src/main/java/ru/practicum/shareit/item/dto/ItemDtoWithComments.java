@@ -18,5 +18,7 @@ public class ItemDtoWithComments {
 
     Boolean available;
 
+    Long requestId;
+
     List<CommentDto> comments;
 }

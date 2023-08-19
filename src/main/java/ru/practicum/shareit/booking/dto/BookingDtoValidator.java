@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking.dto;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.shareit.booking.dto.BookingMapper.DATE_TIME_FORMATTER;
+import static ru.practicum.shareit.util.Util.DATE_TIME_FORMATTER;
 
 public class BookingDtoValidator {
     public static boolean validateBookingDto(BookingDto bookingDto) {

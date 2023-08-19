@@ -17,6 +17,8 @@ public class ItemDtoWithBooking {
 
     Boolean available;
 
+    Long requestId;
+
     BookingDto lastBooking;
 
     BookingDto nextBooking;
