@@ -16,7 +16,8 @@ public class ItemRequestMapper {
         );
     }
 
-    public static ItemRequestDtoWithAnswers toItemRequestDtoWithAnswers(ItemRequest itemRequest, List<ItemDto> itemList) {
+    public static ItemRequestDtoWithAnswers toItemRequestDtoWithAnswers(ItemRequest itemRequest,
+            List<ItemDto> itemList) {
         return new ItemRequestDtoWithAnswers(
                 itemRequest.getId(),
                 itemRequest.getDescription(),

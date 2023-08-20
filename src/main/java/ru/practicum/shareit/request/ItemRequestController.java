@@ -8,6 +8,8 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.util.PageParamsValidator.validatePageableParams;
+
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
@@ -54,15 +56,5 @@ public class ItemRequestController {
         if (userId == null)
             throw new IllegalArgumentException("Отсутствует параметр запроса");
         return service.getItemRequest(userId, requestId);
-    }
-
-    private boolean validatePageableParams(Integer from, Integer size) {
-        if (from == null && size == null)
-            return true;
-        if (from == null || size == null)
-            return false;
-        if (from < 0 || size < 1)
-            return false;
-        return true;
     }
 }

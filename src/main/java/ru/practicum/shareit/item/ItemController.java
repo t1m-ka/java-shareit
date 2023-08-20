@@ -12,6 +12,7 @@ import java.util.List;
 
 import static ru.practicum.shareit.item.dto.ItemDtoValidator.validateNewItemDto;
 import static ru.practicum.shareit.item.dto.ItemDtoValidator.validateUpdatedItemDto;
+import static ru.practicum.shareit.util.PageParamsValidator.validatePageableParams;
 
 @RestController
 @RequestMapping("/items")
@@ -52,18 +53,26 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDtoWithBookingAndComments> getOwnerItems(
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
+            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size) {
         if (ownerId == null)
             throw new IllegalArgumentException("Отсутствует параметр запроса");
-        return service.getOwnerItems(ownerId);
+        if (!validatePageableParams(from, size))
+            throw new IllegalArgumentException("Неверно указаны параметры пагинации");
+        return service.getOwnerItems(ownerId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItemsByName(@RequestParam("text") String text,
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size) {
         if (userId == null)
             throw new IllegalArgumentException("Отсутствует параметр запроса");
-        return service.searchItemsByName(text);
+        if (!validatePageableParams(from, size))
+            throw new IllegalArgumentException("Неверно указаны параметры пагинации");
+        return service.searchItemsByName(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

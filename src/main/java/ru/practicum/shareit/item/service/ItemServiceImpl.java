@@ -1,16 +1,13 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.util.exception.BookingUnavailableException;
-import ru.practicum.shareit.util.exception.ItemNotFoundException;
-import ru.practicum.shareit.util.exception.OwnershipAccessException;
-import ru.practicum.shareit.util.exception.UserNotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -18,12 +15,18 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.exception.BookingUnavailableException;
+import ru.practicum.shareit.util.exception.ItemNotFoundException;
+import ru.practicum.shareit.util.exception.OwnershipAccessException;
+import ru.practicum.shareit.util.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.util.PageParamsMaker.makePageable;
 
 @Service
 @RequiredArgsConstructor
@@ -77,8 +80,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoWithBookingAndComments> getOwnerItems(Long userId) {
-        return itemRepository.findOwnerItems(userId).stream()
+    public List<ItemDtoWithBookingAndComments> getOwnerItems(Long userId, Integer from, Integer size) {
+        Pageable page = makePageable(from, size);
+        return itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page).stream()
                 .map((Item item) -> ItemMapper.toItemDtoWithBookingAndComments(
                         item,
                         findItemLastBooking(item.getId()),
@@ -88,10 +92,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemsByName(String text) {
+    public List<ItemDto> searchItemsByName(String text, Integer from, Integer size) {
         if (text.isEmpty())
             return new ArrayList<>();
-        return itemRepository.findAllByNameAndDescription(text).stream()
+        Pageable page = makePageable(from, size);
+        return itemRepository.findAllByNameAndDescription(text, page).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

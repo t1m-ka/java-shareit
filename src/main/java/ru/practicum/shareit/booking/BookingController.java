@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.service.BookingService;
 import java.util.List;
 
 import static ru.practicum.shareit.booking.dto.BookingDtoValidator.validateBookingDto;
+import static ru.practicum.shareit.util.PageParamsValidator.validatePageableParams;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -40,13 +41,21 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getBookingUserListByState(@RequestParam(defaultValue = "ALL") String state,
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
-        return service.getBookingUserListByState(state, userId);
+            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size) {
+        if (!validatePageableParams(from, size))
+            throw new IllegalArgumentException("Неверно указаны параметры пагинации");
+        return service.getBookingUserListByState(state, userId, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingItemsByOwner(@RequestParam(defaultValue = "ALL") String state,
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
-        return service.getBookingItemsByOwner(state, ownerId);
+            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size) {
+        if (!validatePageableParams(from, size))
+            throw new IllegalArgumentException("Неверно указаны параметры пагинации");
+        return service.getBookingItemsByOwner(state, ownerId, from, size);
     }
 }

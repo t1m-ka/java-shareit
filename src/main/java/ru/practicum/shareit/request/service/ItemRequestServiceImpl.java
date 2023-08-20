@@ -2,7 +2,6 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -18,10 +17,11 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.util.exception.RequestNotFoundException;
 import ru.practicum.shareit.util.exception.UserNotFoundException;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.util.PageParamsMaker.makePageable;
 
 @Service
 @RequiredArgsConstructor
@@ -64,16 +64,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDtoWithAnswers> getOtherUsersItemRequestList(Long userId, Integer from, Integer size) {
         findUser(userId);
-
-        if (from == null && size == null)
-            return itemRequestRepository.findAllByRequestorIdNot(userId).stream()
-                    .map(itemRequest -> ItemRequestMapper.toItemRequestDtoWithAnswers(
-                            itemRequest,
-                            findItemDtoListByRequestId(itemRequest.getId())))
-                    .collect(Collectors.toList());
-
-        Sort sortByCreated = Sort.by(Sort.Direction.DESC, "created");
-        Pageable page = PageRequest.of(from, size, sortByCreated);
+        Pageable page = makePageable(from, size);
 
         return itemRequestRepository.findAllByRequestorIdNot(userId, page).stream()
                 .map(itemRequest -> ItemRequestMapper.toItemRequestDtoWithAnswers(
