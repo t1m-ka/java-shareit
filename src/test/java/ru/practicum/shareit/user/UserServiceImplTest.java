@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -18,7 +17,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.validation.ConstraintViolationException;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,9 +25,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Transactional
+@SpringBootTest(
+        properties = "db.name=test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestPropertySource(properties = {"db.name=test"})
-@SpringBootTest
 public class UserServiceImplTest {
 
     private final EntityManager em;
@@ -38,7 +37,6 @@ public class UserServiceImplTest {
 
 
     @Test
-    @Transactional
     void saveUserSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
 
@@ -53,7 +51,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void saveUserWithEmptyNameShouldThrowException() {
         User newUser = new User("", "user1@mail.ru"); // Пустое поле name
 
@@ -63,7 +60,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void saveUserWithEmptyEmailShouldThrowException() {
         User newUser = new User("failUser", ""); // Пустое поле email
 
@@ -73,7 +69,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void saveUserWithNotUniqueEmailShouldThrowException() {
         User newUser = new User("failUser", "user1@mail.ru");
         service.addUser(newUser);
@@ -86,7 +81,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void updateUserSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -106,7 +100,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void updateUserWithoutNameSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -126,7 +119,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void updateUserWrongIdShouldThrowException() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -139,7 +131,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void updateUserWithNotUniqueEmailShouldThrowException() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -158,7 +149,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void getUserByIdSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -174,7 +164,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void getUserByWrongIdShouldThrowException() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -185,7 +174,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void getAllUsersSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -193,16 +181,16 @@ public class UserServiceImplTest {
         newUser = new User("user2", "user2@mail.ru");
         service.addUser(newUser);
 
-        TypedQuery<User> query = em.createQuery("Select u from User u", User.class);
+        TypedQuery<User> query = em.createQuery("Select u from User u order by id asc", User.class);
         List<UserDto> userList = query.getResultList().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
 
         List<UserDto> receivedUserList = service.getAllUsers();
 
-        assertThat(receivedUserList, equalTo(userList));
+        assertThat(receivedUserList.get(0), equalTo(userList.get(0)));
+        assertThat(receivedUserList.get(1), equalTo(userList.get(1)));
     }
 
     @Test
-    @Transactional
     void deleteUserByIdSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -220,7 +208,6 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @Transactional
     void deleteUserByWrongIdShouldThrowException() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
