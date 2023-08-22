@@ -175,6 +175,17 @@ public class UserServiceImplTest {
 
     @Test
     @Transactional
+    void getUserByWrongIdShouldThrowException() {
+        User newUser = new User("user1", "user1@mail.ru");
+        service.addUser(newUser);
+
+        assertThrows(UserNotFoundException.class, () -> {
+            service.getUserById(1000);
+        });
+    }
+
+    @Test
+    @Transactional
     void getAllUsersSuccess() {
         User newUser = new User("user1", "user1@mail.ru");
         service.addUser(newUser);
@@ -205,6 +216,17 @@ public class UserServiceImplTest {
             em.createQuery("Select u from User u where u.id = :id", User.class)
                     .setParameter("id", user.getId())
                     .getSingleResult();
+        });
+    }
+
+    @Test
+    @Transactional
+    void deleteUserByWrongIdShouldThrowException() {
+        User newUser = new User("user1", "user1@mail.ru");
+        service.addUser(newUser);
+
+        assertThrows(UserNotFoundException.class, () -> {
+            service.deleteUserById(1000);
         });
     }
 }
