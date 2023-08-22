@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
-
     @Mock
     private UserService userService;
 
@@ -41,6 +40,7 @@ public class UserControllerTest {
     private MockMvc mvc;
 
     private UserDto userDto;
+
     private List<UserDto> userDtoList;
 
     @BeforeEach
