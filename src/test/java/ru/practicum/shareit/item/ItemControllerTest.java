@@ -26,8 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -48,6 +47,12 @@ public class ItemControllerTest {
     private ItemDto itemDto;
 
     private ItemDtoWithBookingAndComments itemDtoWithBookingAndComments;
+
+    private List<ItemDto> itemDtoList;
+
+    private List<ItemDtoWithBookingAndComments> itemDtoWithBookingAndCommentsList;
+
+    private CommentDto commentDto;
 
     @BeforeEach
     void setUp() {
@@ -81,8 +86,9 @@ public class ItemControllerTest {
                 itemDto
         );
 
-        List<CommentDto> commentDtoList = Collections.singletonList(
-                new CommentDto(1L, "", "user", "2023-08-18T14:00:00"));
+        commentDto = new CommentDto(1L, "", "user", "2023-08-18T14:00:00");
+
+        List<CommentDto> commentDtoList = Collections.singletonList(commentDto);
 
         itemDtoWithBookingAndComments = new ItemDtoWithBookingAndComments(
                 2L,
@@ -94,6 +100,10 @@ public class ItemControllerTest {
                 nextBooking,
                 commentDtoList
         );
+
+        itemDtoList = Collections.singletonList(itemDto);
+
+        itemDtoWithBookingAndCommentsList = Collections.singletonList(itemDtoWithBookingAndComments);
     }
 
     @Test
@@ -199,4 +209,95 @@ public class ItemControllerTest {
         assertEquals("Отсутствует параметр запроса", exception.getMessage());
     }
 
+    @Test
+    void getOwnerItems() throws Exception {
+        when(itemService.getOwnerItems(anyLong(), anyInt(), anyInt()))
+                .thenReturn(itemDtoWithBookingAndCommentsList);
+        mvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "0")
+                        .param("size", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(itemDtoWithBookingAndComments.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDtoWithBookingAndComments.getName()), String.class))
+                .andExpect(jsonPath("$[0].lastBooking.id", is(1L), Long.class))
+                .andExpect(jsonPath("$[0].nextBooking.id", is(2L), Long.class))
+                .andExpect(jsonPath("$[0].comments", hasSize(1)));
+    }
+
+    @Test
+    void getOwnerItemsWithoutHeaderShouldThrowException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.getOwnerItems(null, 0, 1));
+
+        assertEquals("Отсутствует параметр запроса", exception.getMessage());
+    }
+
+    @Test
+    void getOwnerItemsWithWrongParamsShouldThrowException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.getOwnerItems(1L, -1, 0));
+
+        assertEquals("Неверно указаны параметры пагинации", exception.getMessage());
+    }
+
+    @Test
+    void searchItemsByName() throws Exception {
+        when(itemService.searchItemsByName(anyString(), anyInt(), anyInt()))
+                .thenReturn(itemDtoList);
+
+        mvc.perform(get("/items/search")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("text", "thing")
+                        .param("from", "0")
+                        .param("size", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName()), String.class))
+                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription()), String.class))
+                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable()), Boolean.class));
+    }
+
+    @Test
+    void searchItemsByNameWithoutHeaderShouldThrowException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.searchItemsByName("thing", null, 0, 1));
+
+        assertEquals("Отсутствует параметр запроса", exception.getMessage());
+    }
+
+    @Test
+    void searchItemsByNameWithWrongParamsShouldThrowException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.searchItemsByName("thing",1L, -1, 0));
+
+        assertEquals("Неверно указаны параметры пагинации", exception.getMessage());
+    }
+
+    @Test
+    void addCommentToItem() throws Exception {
+        when(itemService.addCommentItem(anyLong(), anyLong(), any()))
+                .thenReturn(commentDto);
+
+        mvc.perform(get("/items/{itemId}/comment")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("text", "thing")
+                        .param("from", "0")
+                        .param("size", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDto.getName()), String.class))
+                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription()), String.class))
+                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable()), Boolean.class));
+
+    }
 }
