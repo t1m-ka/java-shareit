@@ -86,7 +86,7 @@ public class ItemControllerTest {
                 itemDto
         );
 
-        commentDto = new CommentDto(1L, "", "user", "2023-08-18T14:00:00");
+        commentDto = new CommentDto(1L, "cool thing", "user", "2023-08-18T14:00:00");
 
         List<CommentDto> commentDtoList = Collections.singletonList(commentDto);
 
@@ -275,7 +275,7 @@ public class ItemControllerTest {
     @Test
     void searchItemsByNameWithWrongParamsShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> controller.searchItemsByName("thing",1L, -1, 0));
+                () -> controller.searchItemsByName("thing", 1L, -1, 0));
 
         assertEquals("Неверно указаны параметры пагинации", exception.getMessage());
     }
@@ -285,19 +285,33 @@ public class ItemControllerTest {
         when(itemService.addCommentItem(anyLong(), anyLong(), any()))
                 .thenReturn(commentDto);
 
-        mvc.perform(get("/items/{itemId}/comment")
+        mvc.perform(post("/items/{itemId}/comment", 1L)
                         .header("X-Sharer-User-Id", 1L)
-                        .param("text", "thing")
-                        .param("from", "0")
-                        .param("size", "1")
+                        .content(mapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class))
-                .andExpect(jsonPath("$[0].name", is(itemDto.getName()), String.class))
-                .andExpect(jsonPath("$[0].description", is(itemDto.getDescription()), String.class))
-                .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable()), Boolean.class));
+                .andExpect(jsonPath("$.id", is(commentDto.getId()), Long.class))
+                .andExpect(jsonPath("$.text", is(commentDto.getText()), String.class))
+                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName()), String.class))
+                .andExpect(jsonPath("$.created", is(commentDto.getCreated()), String.class));
+    }
 
+    @Test
+    void addCommentToItemWithoutHeaderShouldThrowException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.addCommentToItem(1L, null, commentDto));
+
+        assertEquals("Отсутствует параметр запроса", exception.getMessage());
+    }
+
+    @Test
+    void addCommentToItemWithWrongParamsShouldThrowException() {
+        commentDto.setText("");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> controller.addCommentToItem(1L, 1L, commentDto));
+
+        assertEquals("Отсутствуют обязательные поля", exception.getMessage());
     }
 }
