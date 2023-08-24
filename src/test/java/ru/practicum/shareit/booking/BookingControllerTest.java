@@ -43,17 +43,13 @@ public class BookingControllerTest {
 
     private BookingDto bookingDto;
 
-    private UserDto booker;
-
-    private ItemDto itemDto;
-
     private List<BookingDto> bookingDtoList;
 
     @BeforeEach
     void setUp() {
         mvc = MockMvcBuilders.standaloneSetup(controller).build();
 
-        itemDto = new ItemDto(
+        ItemDto itemDto = new ItemDto(
                 1L,
                 "thing",
                 "very important thing",
@@ -72,7 +68,6 @@ public class BookingControllerTest {
         );
 
         bookingDtoList = Collections.singletonList(bookingDto);
-
     }
 
     @Test
