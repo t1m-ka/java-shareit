@@ -1,12 +1,14 @@
 package ru.practicum.shareit.request.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemRequestDto {
     private long id;
 
@@ -14,9 +16,7 @@ public class ItemRequestDto {
 
     private String created;
 
-    public ItemRequestDto(long id, String description, String created) {
-        this.id = id;
+    public ItemRequestDto(String description) {
         this.description = description;
-        this.created = created;
     }
 }

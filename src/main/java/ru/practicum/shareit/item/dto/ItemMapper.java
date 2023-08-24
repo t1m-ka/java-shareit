@@ -19,33 +19,6 @@ public class ItemMapper {
         );
     }
 
-    public static ItemDtoWithBooking toItemDtoWithBooking(Item item,
-            BookingDto lastBooking,
-            BookingDto nextBooking) {
-        return new ItemDtoWithBooking(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getItemRequestId(),
-                lastBooking,
-                nextBooking
-        );
-    }
-
-    public static ItemDtoWithComments toItemDtoWithComments(
-            Item item,
-            List<CommentDto> comments) {
-        return new ItemDtoWithComments(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getItemRequestId(),
-                comments
-        );
-    }
-
     public static ItemDtoWithBookingAndComments toItemDtoWithBookingAndComments(
             Item item,
             BookingDto lastBooking,
