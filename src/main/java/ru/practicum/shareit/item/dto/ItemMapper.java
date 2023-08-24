@@ -1,11 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.Generated;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
+@Generated
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
         return new ItemDto(
