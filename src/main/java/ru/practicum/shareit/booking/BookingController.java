@@ -22,7 +22,7 @@ public class BookingController {
         if (!validateBookingDto(bookingDto))
             throw new IllegalArgumentException("Ошибка входных данных");
         if (userId == null)
-            throw new IllegalArgumentException("Отсутсвтует обязательный заголовок запроса");
+            throw new IllegalArgumentException("Отсутствует обязательный заголовок запроса");
         return service.bookItem(bookingDto, userId);
     }
 
