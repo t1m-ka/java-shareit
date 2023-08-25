@@ -76,8 +76,6 @@ public class BookingServiceImplTest {
                 new UserDto(1L, "booker", "booker@book.ru"),
                 itemDto
         );
-
-        //bookingDtoList = Collections.singletonList(bookingDto);
     }
 
     @Test
