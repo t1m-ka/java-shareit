@@ -32,7 +32,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto addItemRequest(Long requestorId, ItemRequestDto itemRequestDto) {
-        User requestor = findUser(requestorId);
+        User requestor = findUserOrThrowException(requestorId);
         ItemRequest itemRequest = new ItemRequest(
                 itemRequestDto.getDescription(),
                 requestor,
@@ -43,7 +43,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoWithAnswers> getUserItemRequestList(Long userId) {
-        findUser(userId);
+        findUserOrThrowException(userId);
 
         List<ItemRequest> itemRequestList = itemRequestRepository
                 .findAllByRequestorId(userId, Sort.by(Sort.Direction.DESC, "created"));
@@ -63,7 +63,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDtoWithAnswers> getOtherUsersItemRequestList(Long userId, Integer from, Integer size) {
-        findUser(userId);
+        findUserOrThrowException(userId);
         Pageable page = makePageable(from, size);
 
         return itemRequestRepository.findAllByRequestorIdNot(userId, page).stream()
@@ -75,14 +75,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDtoWithAnswers getItemRequest(Long userId, Long requestId) {
-        findUser(userId);
+        findUserOrThrowException(userId);
         ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(
                 () -> new RequestNotFoundException("Запрос с id=" + userId + " не найден"));
 
         return ItemRequestMapper.toItemRequestDtoWithAnswers(itemRequest, findItemDtoListByRequestId(requestId));
     }
 
-    private User findUser(long userId) {
+    private User findUserOrThrowException(long userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
     }

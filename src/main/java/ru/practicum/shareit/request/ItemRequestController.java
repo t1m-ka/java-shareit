@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoWithAnswers;
@@ -23,8 +24,7 @@ public class ItemRequestController {
         if (requestorId == null)
             throw new IllegalArgumentException("Отсутствует параметр запроса");
         if (itemRequestDto == null
-                || itemRequestDto.getDescription() == null
-                || itemRequestDto.getDescription().isBlank())
+                || StringUtils.isBlank(itemRequestDto.getDescription()))
             throw new IllegalArgumentException("Отсутствуют обязательные поля");
         return service.addItemRequest(requestorId, itemRequestDto);
     }
