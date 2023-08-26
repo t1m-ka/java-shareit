@@ -70,7 +70,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void addItem() {
+    void testCorrectAddItem() {
         itemService.addItem(itemDto, user1Id);
 
         TypedQuery<Item> query = em.createQuery("Select i from Item i where i.name = :name", Item.class);
@@ -83,14 +83,14 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void addItemWithWrongUserShouldThrowException() {
+    void testAddItemWithWrongUserShouldThrowException() {
         assertThrows(UserNotFoundException.class, () -> {
             itemService.addItem(itemDto, 1000L);
         });
     }
 
     @Test
-    void updateItem() {
+    void testCorrectUpdateItem() {
         long itemId = itemService.addItem(itemDto, user1Id).getId();
 
         ItemDto updatedItemDto = new ItemDto(
@@ -112,7 +112,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void updateItemWithNotByOwnerShouldThrowException() {
+    void testUpdateItemWithNotByOwnerShouldThrowException() {
         long itemId = itemService.addItem(itemDto, user1Id).getId();
 
         long otherUserId = userService.addUser(new User("user2", "user2@mail.ru")).getId();
@@ -123,14 +123,14 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void updateUnknownItemShouldThrowException() {
+    void testUpdateUnknownItemShouldThrowException() {
         assertThrows(ItemNotFoundException.class, () -> {
             itemService.updateItem(itemDto, 1000, user1.getId());
         });
     }
 
     @Test
-    void getItemById() {
+    void testCorrectGetItemById() {
         long itemId = itemService.addItem(itemDto, user1Id).getId();
 
         ItemDtoWithBookingAndComments returnedItem = itemService.getItemById(itemId, user1Id);
@@ -142,7 +142,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void getOwnerItems() {
+    void testCorrectGetOwnerItems() {
         itemService.addItem(itemDto, user1Id);
 
         List<ItemDtoWithBookingAndComments> resultItemList = itemService.getOwnerItems(user1.getId(), 0, 5);
@@ -154,7 +154,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void searchItemsByName() {
+    void testCorrectSearchItemsByName() {
         itemService.addItem(itemDto, user1Id);
 
         List<ItemDto> resultItemList = itemService.searchItemsByName("thing", 0, 5);
@@ -166,7 +166,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void searchItemsByNameShouldReturnEmptyList() {
+    void testSearchItemsByNameShouldReturnEmptyList() {
         itemService.addItem(itemDto, user1Id);
 
         List<ItemDto> resultItemList = itemService.searchItemsByName("", 0, 5);
@@ -175,7 +175,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void addCommentItem() {
+    void testCorrectAddCommentItem() {
         long itemId = itemService.addItem(itemDto, user1Id).getId();
 
         Item returnedItem = itemRepository.findById(itemId).get();
@@ -204,7 +204,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void addCommentItemByWrongUserShouldThrowException() {
+    void testAddCommentItemByWrongUserShouldThrowException() {
         long itemId = itemService.addItem(itemDto, user1Id).getId();
 
         User user2 = new User("user2", "user2@mail.ru");

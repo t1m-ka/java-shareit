@@ -67,7 +67,7 @@ public class ItemRequestServiceImplTest {
     }
 
     @Test
-    void addItemRequest() {
+    void testCorrectAddItemRequest() {
         TypedQuery<ItemRequest> query = em.createQuery("Select ir from ItemRequest ir where ir.id = :id", ItemRequest.class);
         ItemRequest returnedItemRequest = query.setParameter("id", requestDto.getId()).getSingleResult();
 
@@ -77,7 +77,7 @@ public class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getUserItemRequestList() {
+    void testCorrectGetUserItemRequestList() {
         List<ItemRequestDtoWithAnswers> returnedList = requestService.getUserItemRequestList(requestor1Id);
 
         assertThat(returnedList, hasSize(1));
@@ -87,14 +87,14 @@ public class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getUserItemRequestListWithWrongUserShouldThrowException() {
+    void testGetUserItemRequestListWithWrongUserShouldThrowException() {
         assertThrows(UserNotFoundException.class, () -> {
             requestService.getUserItemRequestList(1000L);
         });
     }
 
     @Test
-    void getOtherUsersItemRequestList() {
+    void testCorrectGetOtherUsersItemRequestList() {
         User requestor2 = new User("requestor2", "requestor2@mail.ru");
         long requestor2Id = userRepository.save(requestor2).getId();
         ItemRequestDto returnedDto = requestService.addItemRequest(requestor2Id, new ItemRequestDto("Second needed thing"));
@@ -108,7 +108,7 @@ public class ItemRequestServiceImplTest {
     }
 
     @Test
-    void getOtherUsersItemRequestListShouldReturnEmptyList() {
+    void testCorrectGetOtherUsersItemRequestListShouldReturnEmptyList() {
         User requestor2 = new User("requestor2", "requestor2@mail.ru");
         long requestor2Id = userRepository.save(requestor2).getId();
 

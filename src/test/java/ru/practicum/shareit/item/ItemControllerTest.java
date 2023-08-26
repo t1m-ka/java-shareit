@@ -107,7 +107,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addItem() throws Exception {
+    void testCorrectAddItem() throws Exception {
         when(itemService.addItem(any(), anyLong()))
                 .thenReturn(itemDto);
 
@@ -126,7 +126,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addItemWithoutHeaderShouldThrowException() {
+    void testAddItemWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.addItem(itemDto, null));
 
@@ -134,7 +134,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addItemWithWrongItemDtoShouldThrowException() {
+    void testAddItemWithWrongItemDtoShouldThrowException() {
         itemDto.setName("");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.addItem(itemDto, 1L));
@@ -143,7 +143,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void updateItem() throws Exception {
+    void testCorrectUpdateItem() throws Exception {
         when(itemService.updateItem(any(), anyLong(), anyLong()))
                 .thenReturn(itemDto);
 
@@ -162,7 +162,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void updateItemWithoutHeaderShouldThrowException() {
+    void testUpdateItemWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.updateItem(itemDto, 1L, null));
 
@@ -170,7 +170,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void updateItemWithWrongItemDtoShouldThrowException() {
+    void testUpdateItemWithWrongItemDtoShouldThrowException() {
         itemDto.setName(null);
         itemDto.setDescription(null);
         itemDto.setAvailable(null);
@@ -181,7 +181,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void getItemById() throws Exception {
+    void testCorrectGetItemById() throws Exception {
         when(itemService.getItemById(anyLong(), anyLong()))
                 .thenReturn(itemDtoWithBookingAndComments);
 
@@ -202,7 +202,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void getItemByIdWithoutHeaderShouldThrowException() {
+    void testGetItemByIdWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getItemById(1L, null));
 
@@ -210,7 +210,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void getOwnerItems() throws Exception {
+    void testCorrectGetOwnerItems() throws Exception {
         when(itemService.getOwnerItems(anyLong(), anyInt(), anyInt()))
                 .thenReturn(itemDtoWithBookingAndCommentsList);
         mvc.perform(get("/items")
@@ -229,7 +229,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void getOwnerItemsWithoutHeaderShouldThrowException() {
+    void testGetOwnerItemsWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getOwnerItems(null, 0, 1));
 
@@ -237,7 +237,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void getOwnerItemsWithWrongParamsShouldThrowException() {
+    void testGetOwnerItemsWithWrongParamsShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getOwnerItems(1L, -1, 0));
 
@@ -245,7 +245,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void searchItemsByName() throws Exception {
+    void testCorrectSearchItemsByName() throws Exception {
         when(itemService.searchItemsByName(anyString(), anyInt(), anyInt()))
                 .thenReturn(itemDtoList);
 
@@ -265,7 +265,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void searchItemsByNameWithoutHeaderShouldThrowException() {
+    void testSearchItemsByNameWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.searchItemsByName("thing", null, 0, 1));
 
@@ -273,7 +273,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void searchItemsByNameWithWrongParamsShouldThrowException() {
+    void testSearchItemsByNameWithWrongParamsShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.searchItemsByName("thing", 1L, -1, 0));
 
@@ -281,7 +281,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addCommentToItem() throws Exception {
+    void testCorrectAddCommentToItem() throws Exception {
         when(itemService.addCommentItem(anyLong(), anyLong(), any()))
                 .thenReturn(commentDto);
 
@@ -299,7 +299,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addCommentToItemWithoutHeaderShouldThrowException() {
+    void testAddCommentToItemWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.addCommentToItem(1L, null, commentDto));
 
@@ -307,7 +307,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addCommentToItemWithWrongParamsShouldThrowException() {
+    void testAddCommentToItemWithWrongParamsShouldThrowException() {
         commentDto.setText("");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.addCommentToItem(1L, 1L, commentDto));

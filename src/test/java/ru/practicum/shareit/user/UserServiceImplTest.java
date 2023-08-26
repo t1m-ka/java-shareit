@@ -43,7 +43,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void saveUserSuccess() {
+    void testCorrectSaveUser() {
         service.addUser(newUser);
 
         TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
@@ -55,7 +55,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void saveUserWithEmptyNameShouldThrowException() {
+    void testSaveUserWithEmptyNameShouldThrowException() {
         newUser.setName("");
 
         assertThrows(ConstraintViolationException.class, () -> {
@@ -64,7 +64,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void saveUserWithEmptyEmailShouldThrowException() {
+    void testSaveUserWithEmptyEmailShouldThrowException() {
         newUser.setEmail("");
 
         assertThrows(ConstraintViolationException.class, () -> {
@@ -73,7 +73,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void saveUserWithNotUniqueEmailShouldThrowException() {
+    void testSaveUserWithNotUniqueEmailShouldThrowException() {
         service.addUser(newUser);
 
         User repeatUser = new User("failUser", "user1@mail.ru");
@@ -84,7 +84,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateUserSuccess() {
+    void testCorrectUpdateUser() {
         service.addUser(newUser);
 
         TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
@@ -102,7 +102,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateUserWithoutNameSuccess() {
+    void testCorrectUpdateUserWithoutName() {
         service.addUser(newUser);
 
         TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
@@ -120,7 +120,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateUserWrongIdShouldThrowException() {
+    void testUserWrongIdShouldThrowException() {
         service.addUser(newUser);
 
         User updatedUser = new User(1, "user1Upd", "user1Upd@mail.ru");
@@ -131,7 +131,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void updateUserWithNotUniqueEmailShouldThrowException() {
+    void testUpdateUserWithNotUniqueEmailShouldThrowException() {
         service.addUser(newUser);
 
         newUser = new User("user2", "user2@mail.ru");
@@ -148,7 +148,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void getUserByIdSuccess() {
+    void testCorrectGetUserById() {
         service.addUser(newUser);
 
         TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
@@ -162,7 +162,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void getUserByWrongIdShouldThrowException() {
+    void testGetUserByWrongIdShouldThrowException() {
         service.addUser(newUser);
 
         assertThrows(UserNotFoundException.class, () -> {
@@ -171,7 +171,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void getAllUsersSuccess() {
+    void testCorrectGetAllUsers() {
         service.addUser(newUser);
 
         newUser = new User("user2", "user2@mail.ru");
@@ -187,7 +187,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void deleteUserByIdSuccess() {
+    void testCorrectDeleteUserById() {
         service.addUser(newUser);
 
         TypedQuery<User> query = em.createQuery("Select u from User u where u.email = :email", User.class);
@@ -203,7 +203,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void deleteUserByWrongIdShouldThrowException() {
+    void testDeleteUserByWrongIdShouldThrowException() {
         service.addUser(newUser);
 
         assertThrows(UserNotFoundException.class, () -> {

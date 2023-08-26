@@ -56,7 +56,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void addUserSuccess() throws Exception {
+    void testCorrectAddUser() throws Exception {
         when(userService.addUser(any()))
                 .thenReturn(userDto);
 
@@ -72,7 +72,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUser() throws Exception {
+    void testCorrectUpdateUser() throws Exception {
         when(userService.updateUser(any(), anyLong()))
                 .thenReturn(userDto);
 
@@ -88,7 +88,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void getUserById() throws Exception {
+    void testCorrectGetUserById() throws Exception {
         when(userService.getUserById(anyLong()))
                 .thenReturn(userDto);
 
@@ -100,7 +100,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void getAllUsers() throws Exception {
+    void testCorrectGetAllUsers() throws Exception {
         when(userService.getAllUsers())
                 .thenReturn(userDtoList);
 
@@ -114,7 +114,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void deleteUserById() throws Exception {
+    void testCorrectDeleteUserById() throws Exception {
         mvc.perform(delete("/users/{userId}", 1L))
                 .andExpect(status().isOk());
         verify(userService).deleteUserById(1);

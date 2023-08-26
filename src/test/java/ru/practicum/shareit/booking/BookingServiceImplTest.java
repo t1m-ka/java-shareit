@@ -79,7 +79,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void bookItem() {
+    void testCorrectBookItem() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
 
         TypedQuery<Booking> query = em.createQuery("Select b from Booking b where b.id = :id", Booking.class);
@@ -92,7 +92,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void bookItemWithWrongItemShouldThrowException() {
+    void testBookItemWithWrongItemShouldThrowException() {
         bookingDto.setItemId(1000L);
         assertThrows(ItemNotFoundException.class, () -> {
             bookingService.bookItem(bookingDto, booker1Id);
@@ -100,7 +100,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void bookItemWhenItemUnavailableShouldThrowException() {
+    void testBookItemWhenItemUnavailableShouldThrowException() {
         itemDto.setAvailable(false);
         itemService.updateItem(itemDto, itemDtoId, owner1Id);
 
@@ -110,7 +110,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void approveBooking() {
+    void testCorrectApproveBookingByOwner() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
         bookingService.approveBooking(bookingId, true, owner1Id);
 
@@ -123,7 +123,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void rejectBooking() {
+    void testCorrectRejectBookingByOwner() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
         bookingService.approveBooking(bookingId, false, owner1Id);
 
@@ -136,14 +136,14 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void approveBookingWhenWrongBookingIdShouldThrowException() {
+    void testApproveBookingWhenWrongBookingIdShouldThrowException() {
         assertThrows(BookingNotFoundException.class, () -> {
             bookingService.approveBooking(1000L, true, owner1Id);
         });
     }
 
     @Test
-    void approveBookingByOtherUserShouldThrowException() {
+    void testApproveBookingByOtherUserShouldThrowException() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
         assertThrows(OwnershipAccessException.class, () -> {
             bookingService.approveBooking(bookingId, true, booker1Id);
@@ -151,7 +151,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void approveBookingRepeatShouldThrowException() {
+    void testApproveBookingRepeatShouldThrowException() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
         bookingService.approveBooking(bookingId, true, owner1Id);
 
@@ -161,7 +161,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingInfoByBookingId() {
+    void testGetBookingInfoByBookingIdShouldReturnsExpectedResponse() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
 
         BookingDto returnedBookingDto = bookingService.getBookingInfoByBookingId(bookingId, owner1Id);
@@ -173,7 +173,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingInfoByBookingIdWithWrongIdShouldThrowException() {
+    void testGetBookingInfoByBookingIdWithWrongIdShouldThrowException() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         assertThrows(BookingNotFoundException.class, () -> {
@@ -182,7 +182,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingInfoByBookingIdByOtherUserShouldThrowException() {
+    void testGetBookingInfoByBookingIdByOtherUserShouldThrowException() {
         long bookingId = bookingService.bookItem(bookingDto, booker1Id).getId();
 
         User otherUser = new User("user1", "user1@mail.ru");
@@ -194,7 +194,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingUserListByStateAll() {
+    void testGetBookingUserListByStateAllShouldReturnsBookingList() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         List<BookingDto> returnedList = bookingService.getBookingUserListByState("ALL", booker1Id, 0, 10);
@@ -207,7 +207,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingUserListByStateFuture() {
+    void testShouldReturnsBookingsListByUserAndStateFuture() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         List<BookingDto> returnedList = bookingService.getBookingUserListByState("FUTURE", booker1Id, 0, 10);
@@ -220,7 +220,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingUserListByStatePast() {
+    void testShouldReturnsBookingsListByUserAndStatePast() {
         bookingDto.setStart("2022-10-10T12:00:00");
         bookingDto.setEnd("2022-10-11T14:00:00");
         bookingService.bookItem(bookingDto, booker1Id);
@@ -235,7 +235,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingUserListByStateCurrent() {
+    void testShouldReturnsBookingsListByUserAndStateCurrent() {
         bookingDto.setStart("2023-08-23T12:00:00");
         bookingDto.setEnd("2023-10-11T14:00:00");
         bookingService.bookItem(bookingDto, booker1Id);
@@ -250,7 +250,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingUserListByStateWaiting() {
+    void testShouldReturnsBookingsListByUserAndStateWaiting() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         List<BookingDto> returnedList = bookingService.getBookingUserListByState("WAITING", booker1Id, 0, 10);
@@ -263,21 +263,21 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingUserListByUnknownStateShouldThrowException() {
+    void testGetBookingsListByUserAndStateUnknownShouldThrowException() {
         assertThrows(BookingStatusException.class, () -> {
             bookingService.getBookingUserListByState("BOOKING", booker1Id, 0, 10);
         });
     }
 
     @Test
-    void getBookingUserListByStateByOtherUserShouldThrowException() {
+    void testGetBookingListByWrongUserAndStateShouldThrowException() {
         assertThrows(UserNotFoundException.class, () -> {
             bookingService.getBookingUserListByState("BOOKING", 1000L, 0, 10);
         });
     }
 
     @Test
-    void getBookingItemsByOwnerAllState() {
+    void testShouldReturnsBookingsListByOwnerAndAllState() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         List<BookingDto> returnedList = bookingService.getBookingItemsByOwner("ALL", owner1Id, null, null);
@@ -290,7 +290,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingItemsByOwnerFutureState() {
+    void testShouldReturnsBookingsListByOwnerAndStateFuture() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         List<BookingDto> returnedList = bookingService.getBookingItemsByOwner("FUTURE", owner1Id, 0, 10);
@@ -303,7 +303,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingItemsByOwnerPastState() {
+    void testShouldReturnsBookingsListByOwnerAndStatePast() {
         bookingDto.setStart("2022-10-10T12:00:00");
         bookingDto.setEnd("2022-10-11T14:00:00");
         bookingService.bookItem(bookingDto, booker1Id);
@@ -318,7 +318,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingItemsByOwnerCurrentState() {
+    void testShouldReturnsBookingsListByOwnerAndStateCurrent() {
         bookingDto.setStart("2023-08-23T12:00:00");
         bookingDto.setEnd("2023-10-11T14:00:00");
         bookingService.bookItem(bookingDto, booker1Id);
@@ -333,7 +333,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingItemsByOwnerWaitingState() {
+    void testShouldReturnsBookingsListByOwnerAndStateWaiting() {
         bookingService.bookItem(bookingDto, booker1Id);
 
         List<BookingDto> returnedList = bookingService.getBookingItemsByOwner("WAITING", owner1Id, 0, 10);
@@ -346,7 +346,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingItemsByOwnerUnknownStateShouldThrowException() {
+    void testGetBookingListByOwnerAndUnknownStateShouldThrowException() {
         assertThrows(BookingStatusException.class, () -> {
             bookingService.getBookingItemsByOwner("BOOKING", owner1Id, 0, 10);
         });

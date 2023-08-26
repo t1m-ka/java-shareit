@@ -82,7 +82,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void addItemRequest() throws Exception {
+    void testCorrectAddItemRequest() throws Exception {
         when(itemRequestService.addItemRequest(anyLong(), any()))
                 .thenReturn(returnedDto);
 
@@ -99,7 +99,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void addItemRequestWithoutHeaderShouldThrowException() {
+    void testAddItemRequestWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.addItemRequest(null, requestDto));
 
@@ -107,7 +107,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void addItemRequestWithoutBodyShouldThrowException() {
+    void testAddItemRequestWithoutBodyShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.addItemRequest(1L, null));
 
@@ -115,7 +115,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getUserItemRequestList() throws Exception {
+    void testCorrectGetUserItemRequestList() throws Exception {
         when(itemRequestService.getUserItemRequestList(anyLong()))
                 .thenReturn(requestDtoWithAnswersList);
 
@@ -133,7 +133,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getUserItemRequestListWithoutHeaderShouldThrowException() {
+    void testGetUserItemRequestListWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getUserItemRequestList(null));
 
@@ -141,7 +141,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getOtherUsersItemRequestList() throws Exception {
+    void testCorrectGetOtherUsersItemRequestList() throws Exception {
         when(itemRequestService.getOtherUsersItemRequestList(anyLong(), any(), any()))
                 .thenReturn(requestDtoWithAnswersList);
 
@@ -161,7 +161,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getOtherUsersItemRequestListWithoutHeaderShouldThrowException() {
+    void testGetOtherUsersItemRequestListWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getOtherUsersItemRequestList(null, 0, 1));
 
@@ -169,7 +169,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getOtherUsersItemRequestListWithoutParamsShouldThrowException() {
+    void testGetOtherUsersItemRequestListWithoutParamsShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getOtherUsersItemRequestList(1L, 0, 0));
 
@@ -177,7 +177,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getItemRequest() throws Exception {
+    void testCorrectGetItemRequest() throws Exception {
         when(itemRequestService.getItemRequest(anyLong(), anyLong()))
                 .thenReturn(requestDtoWithAnswers);
 
@@ -194,7 +194,7 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getItemRequestWithoutHeaderShouldThrowException() {
+    void testGetItemRequestWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getItemRequest(null, 1L));
 

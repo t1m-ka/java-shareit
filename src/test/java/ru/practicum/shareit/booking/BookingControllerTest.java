@@ -71,7 +71,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void bookItem() throws Exception {
+    void testBookItemShouldReturnsExpectedResponse() throws Exception {
         when(bookingService.bookItem(any(), anyLong()))
                 .thenReturn(bookingDto);
 
@@ -90,7 +90,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void bookItemWithoutHeaderShouldThrowException() {
+    void testBookItemWithoutHeaderShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.bookItem(bookingDto, null));
 
@@ -98,7 +98,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void bookItemWithWrongBookingDataShouldThrowException() {
+    void testBookItemWithWrongBookingDataShouldThrowException() {
         bookingDto.setStart(null);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.bookItem(bookingDto, 1L));
@@ -107,7 +107,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void approveBooking() throws Exception {
+    void testApproveBookingShouldReturnsExpectedResponse() throws Exception {
         BookingDto approvedBooking = bookingDto;
         approvedBooking.setStatus(BookingStatus.APPROVED);
 
@@ -130,7 +130,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getBookingInfoByBookingId() throws Exception {
+    void testGetBookingInfoByBookingIdShouldReturnsExpectedResponse() throws Exception {
         when(bookingService.getBookingInfoByBookingId(anyLong(), anyLong()))
                 .thenReturn(bookingDto);
 
@@ -148,7 +148,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getBookingUserListByState() throws Exception {
+    void testGetBookingUserListByStateShouldReturnsExpectedResponse() throws Exception {
         when(bookingService.getBookingUserListByState(any(), anyLong(), any(), any()))
                 .thenReturn(bookingDtoList);
 
@@ -169,7 +169,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getBookingUserListByStateWithWrongParamsShouldThrowException() {
+    void testGetBookingUserListByStateWithWrongParamsShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getBookingUserListByState("ALL", 1L, null, 1));
 
@@ -177,7 +177,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getBookingItemsByOwner() throws Exception {
+    void testGetBookingItemsByOwnerShouldReturnsExpectedResponse() throws Exception {
         when(bookingService.getBookingItemsByOwner(any(), anyLong(), anyInt(), anyInt()))
                 .thenReturn(bookingDtoList);
 
@@ -198,7 +198,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getBookingItemsByOwnerWithWrongParamsShouldThrowException() {
+    void testGetBookingItemsByOwnerWithWrongParamsShouldThrowException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> controller.getBookingItemsByOwner("ALL", 1L, 0, null));
 
