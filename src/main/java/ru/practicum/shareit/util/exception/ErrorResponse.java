@@ -1,5 +1,8 @@
-package ru.practicum.shareit.exception;
+package ru.practicum.shareit.util.exception;
 
+import lombok.Generated;
+
+@Generated
 public class ErrorResponse {
     String error;
 

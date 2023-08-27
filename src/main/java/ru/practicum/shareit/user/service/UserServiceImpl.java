@@ -2,12 +2,12 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.exception.UserAlreadyExistsException;
+import ru.practicum.shareit.util.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;

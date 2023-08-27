@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.exception.BookingStatusException;
+import ru.practicum.shareit.util.exception.BookingStatusException;
 
 public enum BookingSearchStatus {
     ALL,

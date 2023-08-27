@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -9,15 +10,18 @@ import ru.practicum.shareit.booking.dto.BookingSearchStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.util.exception.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.util.PageParamsMaker.makePageable;
+import static ru.practicum.shareit.util.PageParamsMaker.makePageableWithSort;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingUserListByState(String state, Long userId) {
+    public List<BookingDto> getBookingUserListByState(String state, Long userId, Integer from, Integer size) {
         findUser(userId);
         BookingSearchStatus bookingSearchStatus;
         try {
@@ -77,12 +81,13 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new BookingStatusException("Unknown state: " + state);
         }
+        Pageable page = makePageable(from, size);
         LocalDateTime now = LocalDateTime.now();
         switch (bookingSearchStatus.name()) {
             case "ALL":
                 return bookingRepository.findAllByBookerId(
                                 userId,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                makePageableWithSort(from, size, Sort.by(Sort.Direction.DESC, "start")))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -90,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findByBookerIdAndStartIsAfter(
                                 userId,
                                 now,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                makePageableWithSort(from, size, Sort.by(Sort.Direction.DESC, "start")))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -98,18 +103,18 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findByBookerIdAndEndIsBefore(
                                 userId,
                                 now,
-                                Sort.by(Sort.Direction.DESC, "end"))
+                                makePageableWithSort(from, size, Sort.by(Sort.Direction.DESC, "end")))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case "CURRENT":
-                return bookingRepository.findAllCurrentBookingUser(now, userId)
+                return bookingRepository.findAllCurrentBookingUser(now, userId, page)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             default:
                 BookingStatus status = BookingSearchStatus.toBookingStatus(bookingSearchStatus);
-                return bookingRepository.findAllBookingUserByState(status, userId)
+                return bookingRepository.findAllBookingUserByState(status, userId, page)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -117,7 +122,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingItemsByOwner(String state, Long ownerId) {
+    public List<BookingDto> getBookingItemsByOwner(String state, Long ownerId, Integer from, Integer size) {
         findUser(ownerId);
         BookingSearchStatus bookingSearchStatus;
         try {
@@ -125,12 +130,13 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new BookingStatusException("Unknown state: " + state);
         }
+        Pageable page = makePageable(from, size);
         LocalDateTime now = LocalDateTime.now();
         switch (bookingSearchStatus.name()) {
             case "ALL":
                 return bookingRepository.findByItemOwnerId(
                                 ownerId,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                makePageableWithSort(from, size, Sort.by(Sort.Direction.DESC, "start")))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -138,7 +144,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findByItemOwnerIdAndStartIsAfter(
                                 ownerId,
                                 now,
-                                Sort.by(Sort.Direction.DESC, "start"))
+                                makePageableWithSort(from, size, Sort.by(Sort.Direction.DESC, "start")))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -146,14 +152,15 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findByItemOwnerIdAndEndIsBefore(
                                 ownerId,
                                 now,
-                                Sort.by(Sort.Direction.DESC, "end"))
+                                makePageableWithSort(from, size, Sort.by(Sort.Direction.DESC, "end")))
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case "CURRENT":
                 return bookingRepository.findAllCurrentBookingItemsByOwner(
                                 now,
-                                ownerId)
+                                ownerId,
+                                page)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());
@@ -161,7 +168,8 @@ public class BookingServiceImpl implements BookingService {
                 BookingStatus status = BookingSearchStatus.toBookingStatus(bookingSearchStatus);
                 return bookingRepository.findAllBookingItemsByOwner(
                                 status,
-                                ownerId)
+                                ownerId,
+                                page)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(Collectors.toList());

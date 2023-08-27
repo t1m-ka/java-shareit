@@ -25,6 +25,17 @@ public class BookingDto {
 
     private ItemDto item;
 
+    public BookingDto(long itemId, String start, String end, BookingStatus status, UserDto booker,
+            ItemDto item) {
+        this.itemId = itemId;
+        this.start = start;
+        this.end = end;
+        this.status = status;
+        this.booker = booker;
+        this.item = item;
+        this.bookerId = booker.getId();
+    }
+
     public BookingDto(long id, long itemId, String start, String end, BookingStatus status, UserDto booker,
             ItemDto item) {
         this.id = id;
