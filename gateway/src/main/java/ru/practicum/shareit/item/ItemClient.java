@@ -27,8 +27,8 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> addItem(long userId, ItemDto itemDto) {
-        return post("", userId, itemDto);
+    public ResponseEntity<Object> addItem(long ownerId, ItemDto itemDto) {
+        return post("", ownerId, itemDto);
     }
 
     public ResponseEntity<Object> updateItem(long itemId, long ownerId, ItemDto itemDto) {
@@ -51,7 +51,7 @@ public class ItemClient extends BaseClient {
                 "text", text,
                 "from", from,
                 "size", size);
-        return get("/search?text={text}&from={from}&size={size}");
+        return get("/search?text={text}&from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> addCommentToItem(long itemId, long authorId, CommentDto commentDto) {
