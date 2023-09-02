@@ -12,35 +12,38 @@ import ru.practicum.shareit.util.exception.UserNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.user.dto.UserMapper.toUser;
+import static ru.practicum.shareit.user.dto.UserMapper.toUserDto;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     @Override
-    public UserDto addUser(User user) {
-        return UserMapper.toUserDto(repository.save(user));
+    public UserDto addUser(UserDto userDto) {
+        return toUserDto(repository.save(toUser(userDto)));
     }
 
     @Override
-    public UserDto updateUser(User user, long userId) {
+    public UserDto updateUser(UserDto userDto, long userId) {
         User currentUser = repository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
 
-        repository.findByEmailIs(user.getEmail()).ifPresent(x -> {
+        repository.findByEmailIs(userDto.getEmail()).ifPresent(x -> {
             if (x.getId() != userId)
                 throw new UserAlreadyExistsException("Пользователь с таким адресом уже зарегистрирован");
         });
-        if (user.getName() != null)
-            currentUser.setName(user.getName());
-        if (user.getEmail() != null)
-            currentUser.setEmail(user.getEmail());
-        return UserMapper.toUserDto(repository.save(currentUser));
+        if (userDto.getName() != null)
+            currentUser.setName(userDto.getName());
+        if (userDto.getEmail() != null)
+            currentUser.setEmail(userDto.getEmail());
+        return toUserDto(repository.save(currentUser));
     }
 
     @Override
     public UserDto getUserById(long userId) {
-        return UserMapper.toUserDto(
+        return toUserDto(
                 repository.findById(userId).orElseThrow(
                         () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден")));
     }

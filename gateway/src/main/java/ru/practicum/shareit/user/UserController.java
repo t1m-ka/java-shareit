@@ -10,6 +10,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 
+import static ru.practicum.shareit.user.dto.UserValidator.validateUserCreation;
+import static ru.practicum.shareit.user.dto.UserValidator.validateUserUpdate;
+
 @Controller
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
@@ -20,14 +23,18 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> addUser(@RequestBody @Valid UserDto userDto) {
-        log.info("Creating user {}", userDto);
+        if (!validateUserCreation(userDto))
+            throw new IllegalArgumentException("The received entity is not correct");
+        log.info("Creating user {}", userDto.toString());
         return userClient.addUser(userDto);
     }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable long userId,
             @RequestBody @Valid UserDto userDto) {
-        log.info("Updating user {}, user={}", userId, userDto);
+        if (!validateUserUpdate(userDto))
+            throw new IllegalArgumentException("The received entity is not correct");
+        log.info("Updating user {}, user={}", userId, userDto.toString());
         return userClient.updateUser(userId, userDto);
     }
 

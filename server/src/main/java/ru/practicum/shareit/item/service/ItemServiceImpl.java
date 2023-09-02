@@ -66,11 +66,12 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoWithBookingAndComments getItemById(long itemId, Long userId) {
         User user = findUser(userId);
         Item item = findItem(itemId);
+        LocalDateTime now = LocalDateTime.now();
         BookingDto lastBooking = null;
         BookingDto nextBooking = null;
         if (item.getOwner().getId() == user.getId()) {
-            lastBooking = findItemLastBooking(itemId);
-            nextBooking = findItemNextBooking(itemId);
+            lastBooking = findItemLastBooking(itemId, now);
+            nextBooking = findItemNextBooking(itemId, now);
         }
         return ItemMapper.toItemDtoWithBookingAndComments(
                 item,
@@ -82,11 +83,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDtoWithBookingAndComments> getOwnerItems(Long userId, Integer from, Integer size) {
         Pageable page = makePageable(from, size);
+        LocalDateTime now = LocalDateTime.now();
         return itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page).stream()
                 .map((Item item) -> ItemMapper.toItemDtoWithBookingAndComments(
                         item,
-                        findItemLastBooking(item.getId()),
-                        findItemNextBooking(item.getId()),
+                        findItemLastBooking(item.getId(), now),
+                        findItemNextBooking(item.getId(), now),
                         findAllItemComments(item.getId())))
                 .collect(Collectors.toList());
     }
@@ -111,18 +113,18 @@ public class ItemServiceImpl implements ItemService {
                 () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
     }
 
-    private BookingDto findItemLastBooking(long itemId) {
+    private BookingDto findItemLastBooking(long itemId, LocalDateTime now) {
         List<Booking> pastBookingList = bookingRepository
-                .findByItemIdAndStartBeforeOrderByEndDesc(itemId, LocalDateTime.now());
+                .findByItemIdAndStartBeforeOrderByEndDesc(itemId, now);
         Optional<Booking> lastBooking = pastBookingList.stream()
                 .filter(x -> x.getStatus().equals(BookingStatus.APPROVED))
                 .findFirst();
         return lastBooking.map(BookingMapper::toBookingDto).orElse(null);
     }
 
-    private BookingDto findItemNextBooking(long itemId) {
+    private BookingDto findItemNextBooking(long itemId, LocalDateTime now) {
         List<Booking> futureBookingList = bookingRepository
-                .findByItemIdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
+                .findByItemIdAndStartAfterOrderByStartAsc(itemId, now);
         Optional<Booking> nextBooking = futureBookingList.stream()
                 .filter(x -> x.getStatus().equals(BookingStatus.APPROVED))
                 .findFirst();
@@ -145,7 +147,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private boolean isUserBookItem(Item item) {
-        return findItemLastBooking(item.getId()) != null;
+        return findItemLastBooking(item.getId(), LocalDateTime.now()) != null;
     }
 
     private List<CommentDto> findAllItemComments(long itemId) {

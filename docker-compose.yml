@@ -6,6 +6,7 @@ services:
     container_name: gateway_container
     ports:
       - "8080:8080"
+      - "8081:8081"
     depends_on:
       - server
     environment:
@@ -14,9 +15,10 @@ services:
   server:
     build: /server
     image: server_image
-    container_name: server_shareit
+    container_name: server_container
     ports:
       - "9090:9090"
+      - "9091:9091"
     depends_on:
       - db
     environment:
@@ -24,10 +26,10 @@ services:
 
   db:
     image: postgres
-    container_name: postgres-container
+    container_name: postgres_container
     ports:
-      - "5432:5432"
+      - "6541:5432"
     environment:
-        POSTGRES_DB: shareit
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: iamroot
+        - POSTGRES_DB=shareit
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=iamroot
