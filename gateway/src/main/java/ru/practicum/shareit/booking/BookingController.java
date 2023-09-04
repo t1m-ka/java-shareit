@@ -2,8 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -12,11 +10,12 @@ import ru.practicum.shareit.booking.dto.BookingState;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 import static ru.practicum.shareit.booking.dto.BookingDtoValidator.validateBookingDto;
 import static ru.practicum.shareit.util.PageParamsValidator.validatePageableParams;
 
-@Controller
+@RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
@@ -25,7 +24,7 @@ public class BookingController {
     private final BookingClient bookingClient;
 
     @PostMapping
-    public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto bookItem(@RequestHeader("X-Sharer-User-Id") Long userId,
             @RequestBody @Valid BookingDto requestDto) {
         if (userId == null)
             throw new IllegalArgumentException("Request header is missing");
@@ -36,7 +35,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> approveBooking(@PathVariable Long bookingId,
+    public BookingDto approveBooking(@PathVariable Long bookingId,
             @RequestParam boolean approved,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
         if (ownerId == null)
@@ -46,7 +45,7 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable Long bookingId) {
         if (userId == null)
             throw new IllegalArgumentException("Request header is missing");
@@ -55,7 +54,7 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<BookingDto> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
             @RequestParam(name = "state", defaultValue = "all") String stateParam,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -68,7 +67,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> getBookingItemsByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
+    public List<BookingDto> getBookingItemsByOwner(@RequestHeader("X-Sharer-User-Id") long ownerId,
             @RequestParam(name = "state", defaultValue = "all") String stateParam,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {

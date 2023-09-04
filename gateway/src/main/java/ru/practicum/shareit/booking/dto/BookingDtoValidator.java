@@ -6,11 +6,5 @@ public class BookingDtoValidator {
                 && bookingDto.getEnd() != null
                 && !bookingDto.getStart().isAfter(bookingDto.getEnd())
                 && !bookingDto.getStart().isEqual(bookingDto.getEnd());
-        /*
-        end before start
-        start eq end
-        start eq null
-        end eq null
-        */
     }
 }
