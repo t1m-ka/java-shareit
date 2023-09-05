@@ -3,17 +3,17 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
+import java.util.List;
 
 import static ru.practicum.shareit.user.dto.UserValidator.validateUserCreation;
 import static ru.practicum.shareit.user.dto.UserValidator.validateUserUpdate;
 
-@Controller
+@RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +22,7 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> addUser(@RequestBody @Valid UserDto userDto) {
+    public UserDto addUser(@RequestBody @Valid UserDto userDto) {
         if (!validateUserCreation(userDto))
             throw new IllegalArgumentException("The received entity is not correct");
         log.info("Creating user {}", userDto.toString());
@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable long userId,
+    public UserDto updateUser(@PathVariable long userId,
             @RequestBody @Valid UserDto userDto) {
         if (!validateUserUpdate(userDto))
             throw new IllegalArgumentException("The received entity is not correct");
@@ -39,13 +39,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable long userId) {
+    public UserDto getUserById(@PathVariable long userId) {
         log.info("Get user {}", userId);
         return userClient.getUserById(userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.info("Get all users");
         return userClient.getAllUsers();
     }

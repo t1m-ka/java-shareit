@@ -24,4 +24,10 @@ public class ErrorHandler {
     public ErrorResponse handleUserAlreadyExistsException(final UserAlreadyExistsException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnexpectedServerResponseException(final UnexpectedServerResponseException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

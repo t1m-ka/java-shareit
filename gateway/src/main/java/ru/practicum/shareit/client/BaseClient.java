@@ -94,8 +94,7 @@ public class BaseClient {
             log.info("Received HTTP status code: {}", shareitServerResponse.getStatusCode());
         } catch (HttpStatusCodeException e) {
             log.error("HTTP request failed with status code: {}", e.getStatusCode());
-            log.error("Response body: {}", e.getResponseBodyAsString());
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         }
         return prepareGatewayResponse(shareitServerResponse);
     }

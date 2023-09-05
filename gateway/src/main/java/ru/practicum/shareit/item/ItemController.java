@@ -3,22 +3,22 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 import static ru.practicum.shareit.item.dto.ItemDtoValidator.validateItemCreation;
 import static ru.practicum.shareit.item.dto.ItemDtoValidator.validateItemUpdate;
 import static ru.practicum.shareit.util.PageParamsValidator.validatePageableParams;
 
-@Controller
+@RestController
 @RequestMapping(path = "/items")
 @RequiredArgsConstructor
 @Slf4j
@@ -27,7 +27,7 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> addItem(
+    public ItemDto addItem(
             @RequestBody @Valid ItemDto itemDto,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
         if (ownerId == null)
@@ -39,7 +39,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> updateItem(
+    public ItemDto updateItem(
             @RequestBody ItemDto itemDto,
             @PathVariable long itemId,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId) {
@@ -52,7 +52,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object> getItemById(@PathVariable long itemId,
+    public ItemDtoWithBookingAndComments getItemById(@PathVariable long itemId,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId == null)
             throw new IllegalArgumentException("Request header is missing");
@@ -61,7 +61,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getOwnerItems(
+    public List<ItemDtoWithBookingAndComments> getOwnerItems(
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long ownerId,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -74,7 +74,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchItemsByName(@RequestParam("text") String text,
+    public List<ItemDto> searchItemsByName(@RequestParam("text") String text,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -87,7 +87,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> addCommentToItem(@PathVariable long itemId,
+    public CommentDto addCommentToItem(@PathVariable long itemId,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long authorId,
             @RequestBody CommentDto commentDto) {
         if (authorId == null)

@@ -2,14 +2,17 @@ package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDto;
 
-@Getter
+import java.util.List;
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ItemDto {
+public class ItemDtoWithBookingAndComments {
     long id;
 
     String name;
@@ -19,4 +22,10 @@ public class ItemDto {
     Boolean available;
 
     Long requestId;
+
+    BookingDto lastBooking;
+
+    BookingDto nextBooking;
+
+    List<CommentDto> comments;
 }

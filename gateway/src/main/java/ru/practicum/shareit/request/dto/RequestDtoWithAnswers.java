@@ -1,21 +1,24 @@
 package ru.practicum.shareit.request.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
-@Getter
 @NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RequestDto {
+public class RequestDtoWithAnswers {
     private long id;
 
-    @NotEmpty(message = "Описание не может быть пустым")
     private String description;
 
     private String created;
+
+    private List<ItemDto> items = new ArrayList<>();
 }

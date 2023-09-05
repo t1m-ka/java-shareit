@@ -3,18 +3,18 @@ package ru.practicum.shareit.request;
 import io.micrometer.core.instrument.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.RequestDto;
+import ru.practicum.shareit.request.dto.RequestDtoWithAnswers;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 import static ru.practicum.shareit.util.PageParamsValidator.validatePageableParams;
 
-@Controller
+@RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 @Slf4j
@@ -23,7 +23,7 @@ public class RequestController {
     private final RequestClient requestClient;
 
     @PostMapping
-    public ResponseEntity<Object> addItemRequest(@RequestHeader("X-Sharer-User-Id") Long requestorId,
+    public RequestDto addItemRequest(@RequestHeader("X-Sharer-User-Id") Long requestorId,
             @RequestBody RequestDto requestDto) {
         if (requestorId == null)
             throw new IllegalArgumentException("Request header is missing");
@@ -35,7 +35,7 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUserItemRequestList(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<RequestDtoWithAnswers> getUserItemRequestList(@RequestHeader("X-Sharer-User-Id") Long userId) {
         if (userId == null)
             throw new IllegalArgumentException("Request header is missing");
         log.info("Get item request list of user {}", userId);
@@ -43,7 +43,7 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getOtherUsersItemRequestList(
+    public List<RequestDtoWithAnswers> getOtherUsersItemRequestList(
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
             @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
@@ -55,7 +55,7 @@ public class RequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getItemRequest(
+    public RequestDtoWithAnswers getItemRequest(
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
             @PathVariable Long requestId) {
         if (userId == null)

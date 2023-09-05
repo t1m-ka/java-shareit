@@ -13,12 +13,11 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.client.BaseClient;
-import ru.practicum.shareit.util.exception.EntityNotFoundException;
-import ru.practicum.shareit.util.exception.ErrorResponse;
-import ru.practicum.shareit.util.exception.UserAlreadyExistsException;
 
 import java.util.List;
 import java.util.Map;
+
+import static ru.practicum.shareit.util.Util.handleExceptionFromServer;
 
 @Service
 public class BookingClient extends BaseClient {
@@ -27,8 +26,9 @@ public class BookingClient extends BaseClient {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder,
-                         ObjectMapper objectMapper) {
+    public BookingClient(@Value("${shareit-server.url}") String serverUrl,
+            RestTemplateBuilder builder,
+            ObjectMapper objectMapper) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
@@ -42,7 +42,7 @@ public class BookingClient extends BaseClient {
     public BookingDto bookItem(long userId, BookingDto requestDto) {
         ResponseEntity<Object> responseEntity = post("", userId, requestDto);
         if (!responseEntity.getStatusCode().is2xxSuccessful())
-            throwExceptionFromServer(responseEntity);
+            handleExceptionFromServer(responseEntity, objectMapper);
         return objectMapper.convertValue(responseEntity.getBody(), BookingDto.class);
     }
 
@@ -53,11 +53,15 @@ public class BookingClient extends BaseClient {
                 ownerId,
                 parameters,
                 null);
+        if (!responseEntity.getStatusCode().is2xxSuccessful())
+            handleExceptionFromServer(responseEntity, objectMapper);
         return objectMapper.convertValue(responseEntity.getBody(), BookingDto.class);
     }
 
     public BookingDto getBooking(long userId, Long bookingId) {
         ResponseEntity<Object> responseEntity = get("/" + bookingId, userId);
+        if (!responseEntity.getStatusCode().is2xxSuccessful())
+            handleExceptionFromServer(responseEntity, objectMapper);
         return objectMapper.convertValue(responseEntity.getBody(), BookingDto.class);
     }
 
@@ -70,7 +74,9 @@ public class BookingClient extends BaseClient {
         ResponseEntity<Object> responseEntity = get("?state={state}&from={from}&size={size}",
                 userId,
                 parameters);
-        return objectMapper.convertValue(responseEntity.getBody(), new TypeReference<List<BookingDto>>() {
+        if (!responseEntity.getStatusCode().is2xxSuccessful())
+            handleExceptionFromServer(responseEntity, objectMapper);
+        return objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {
         });
     }
 
@@ -83,21 +89,9 @@ public class BookingClient extends BaseClient {
         ResponseEntity<Object> responseEntity = get("/owner?state={state}&from={from}&size={size}",
                 ownerId,
                 parameters);
-        return objectMapper.convertValue(responseEntity.getBody(), new TypeReference<List<BookingDto>>() {
+        if (!responseEntity.getStatusCode().is2xxSuccessful())
+            handleExceptionFromServer(responseEntity, objectMapper);
+        return objectMapper.convertValue(responseEntity.getBody(), new TypeReference<>() {
         });
-    }
-
-    private void throwExceptionFromServer(ResponseEntity<Object> responseEntity) {
-        ErrorResponse errorResponse = (ErrorResponse) responseEntity.getBody();
-        switch (responseEntity.getStatusCode().value()) {
-            case 400:
-                throw new IllegalArgumentException(errorResponse.getError());
-            case 403:
-                throw new UserAlreadyExistsException(errorResponse.getError());
-            case 404:
-                throw new EntityNotFoundException(errorResponse.getError());
-            default:
-                throw new RuntimeException(errorResponse.getError());
-        }
     }
 }
