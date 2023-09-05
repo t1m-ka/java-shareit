@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto approveBooking(Long bookingId, boolean approved, Long ownerId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new BookingNotFoundException("Бронирование с id=" + bookingId + " не найдено"));
+                () -> new EntityNotFoundException("Бронирование с id=" + bookingId + " не найдено"));
         findUser(ownerId);
         if (booking.getItem().getOwner().getId() != ownerId)
             throw new OwnershipAccessException("Смена статуса разрешена только владельцу");
@@ -63,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBookingInfoByBookingId(Long bookingId, Long userId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new BookingNotFoundException("Бронирование с id=" + bookingId + " не найдено"));
+                () -> new EntityNotFoundException("Бронирование с id=" + bookingId + " не найдено"));
         findUser(userId);
         long ownerId = booking.getItem().getOwner().getId();
         long bookerId = booking.getBooker().getId();
@@ -178,11 +178,11 @@ public class BookingServiceImpl implements BookingService {
 
     private User findUser(long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+                () -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
     }
 
     private Item findItem(long itemId) {
         return itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
+                () -> new EntityNotFoundException("Вещь с id=" + itemId + " не найдена"));
     }
 }

@@ -16,9 +16,8 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.util.exception.BookingUnavailableException;
-import ru.practicum.shareit.util.exception.ItemNotFoundException;
+import ru.practicum.shareit.util.exception.EntityNotFoundException;
 import ru.practicum.shareit.util.exception.OwnershipAccessException;
-import ru.practicum.shareit.util.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -105,12 +104,12 @@ public class ItemServiceImpl implements ItemService {
 
     private User findUser(long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+                () -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
     }
 
     private Item findItem(long itemId) {
         return itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemNotFoundException("Вещь с id=" + itemId + " не найдена"));
+                () -> new EntityNotFoundException("Вещь с id=" + itemId + " не найдена"));
     }
 
     private BookingDto findItemLastBooking(long itemId, LocalDateTime now) {

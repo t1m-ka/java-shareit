@@ -7,7 +7,7 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.util.exception.UserAlreadyExistsException;
-import ru.practicum.shareit.util.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.EntityNotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto, long userId) {
         User currentUser = repository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+                () -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
 
         repository.findByEmailIs(userDto.getEmail()).ifPresent(x -> {
             if (x.getId() != userId)
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(long userId) {
         return toUserDto(
                 repository.findById(userId).orElseThrow(
-                        () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден")));
+                        () -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден")));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(long userId) {
         repository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+                () -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
         repository.deleteById(userId);
     }
 }

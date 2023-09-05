@@ -14,8 +14,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.util.exception.RequestNotFoundException;
-import ru.practicum.shareit.util.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,13 +76,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDtoWithAnswers getItemRequest(Long userId, Long requestId) {
         findUserOrThrowException(userId);
         ItemRequest itemRequest = itemRequestRepository.findById(requestId).orElseThrow(
-                () -> new RequestNotFoundException("Запрос с id=" + userId + " не найден"));
+                () -> new EntityNotFoundException("Запрос с id=" + userId + " не найден"));
 
         return ItemRequestMapper.toItemRequestDtoWithAnswers(itemRequest, findItemDtoListByRequestId(requestId));
     }
 
     private User findUserOrThrowException(long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("Пользователь с id=" + userId + " не найден"));
+                () -> new EntityNotFoundException("Пользователь с id=" + userId + " не найден"));
     }
 }

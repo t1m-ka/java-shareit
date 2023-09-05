@@ -18,4 +18,10 @@ public class ErrorHandler {
     public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleUserAlreadyExistsException(final UserAlreadyExistsException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }
